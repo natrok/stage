@@ -5,10 +5,13 @@ using Newtonsoft.Json;
 using SharpDX;
 using SharpDX.Mathematics.Interop;
 using SharpDX.Windows;
+using SharpDX.Direct3D9;
+
 using System;
 using System.IO;
-using SharpDX.Direct3D9;
 using System.Collections.Generic;
+
+using System.Windows.Forms;
 
 namespace ConsoleApp1
 {
@@ -41,13 +44,25 @@ namespace ConsoleApp1
         private int canvasWidth;
         private int canvasHeight;
 
-        private float fadeOpacity = 0.96f;
+        private float fadeOpacity = 0.97f;
+
+        private TrackBar _slideOpacity;
+        private TextBox _textBox;
+
+        private float fadeMin = 0.96f, fadeMax = 0.999f;
+        private float dropRateMin = 0.0f, dropRateMax = 0.1f;
+        private float speedMin = 0.05f, speedMax = 1.0f;
+        private float dropRateBumpMin = 0, dropRateBumpMax = 0.2f;
+        private int numParticlesMin = 1024, numParticlesMax = 58000;
+
+
+        //private ColorSlider.ColorSlider cs;
 
         List<Tuple<double, uint>> froidRampColors;
+        private UserControl myUserControl;
 
         public Game()
         {
-
 
             froidRampColors = new List<Tuple<double, uint>>()
             {
@@ -61,10 +76,15 @@ namespace ConsoleApp1
             new Tuple<double, uint>(1.0, 0xff084594)
             };
 
+            //cs = new ColorSlider.ColorSlider(1,99,25);
+
             //Render form
             _RenderForm = new RenderForm("My first SharpDX app");
             _RenderForm.ClientSize = new System.Drawing.Size(_width, _height);
             _RenderForm.AllowUserResizing = false;
+
+            myUserControl = new UserControl();
+            _RenderForm.Controls.Add(myUserControl);
 
             PresentParameters p = new PresentParameters();
             p.Windowed = true;
@@ -77,7 +97,7 @@ namespace ConsoleApp1
 
             //Device
             _Device = new Device(new Direct3D(), 0, DeviceType.Hardware, _RenderForm.Handle, CreateFlags.HardwareVertexProcessing, p);
-            
+
             //Read WindData
             string fileName = "2016112100";
             string PathName = "Wind";
@@ -88,6 +108,7 @@ namespace ConsoleApp1
             InitializeRenderTexture();
             InitTexturesScreen();
             InitializeParticle();
+            InitSlidesGui(myUserControl);
             InitTexturesParticles();
             InitializeShaders();
 
@@ -106,13 +127,19 @@ namespace ConsoleApp1
             _Device.SetRenderState(RenderState.StencilEnable, false);
             _Device.SetRenderState(RenderState.CullMode, Cull.None);
 
-            Draw(); 
+            Draw();
             //updateParticlesTest();
             updateParticles();
         }
 
         public void Draw()
         {
+            updateValues();
+            /*updateFadeValue();
+            updateDropRate();
+            updateDropRateBump();
+            updateSpeed();*/
+
             // draw particles in _screenTexture
             RenderToSurface rts = new RenderToSurface(_Device, _width, _height, _screenTexture.GetLevelDescription(0).Format);
             Surface surface = _screenTexture.GetSurfaceLevel(0);
@@ -148,11 +175,17 @@ namespace ConsoleApp1
         /*Shader*/
         void drawTexture(Texture texture, float opacity)
         {
+
+
+
             _screenShader.SetTexture("d_screen", texture);
             _Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
             _Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
             _Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
             _Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+
+            //myUserControl.FadeBox.Text = "" + opacity.ToString();
+
 
             _screenShader.SetValue("d_opacity", opacity);
             // patch pour directx 9, ne pas avoir se code en open gl es
@@ -214,7 +247,7 @@ namespace ConsoleApp1
             rts.Device.Clear(ClearFlags.Target, new SharpDX.ColorBGRA(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, 1);
 
             _Device.SetRenderState(RenderState.AlphaBlendEnable, false);
-            
+
             /*set parametres shader*/
             _updateParticleShader.SetTexture("d_wind", _windTexture);
             _Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
@@ -233,6 +266,7 @@ namespace ConsoleApp1
             _updateParticleShader.SetValue("d_wind_resolution", new float[] { _windData.width, _windData.height });
             _updateParticleShader.SetValue("d_wind_min", new float[] { _windData.uMin, _windData.vMin });
             _updateParticleShader.SetValue("d_wind_max", new float[] { _windData.uMax, _windData.vMax });
+
             _updateParticleShader.SetValue("d_speed_factor", _particles.SpeedFactor);
             _updateParticleShader.SetValue("d_drop_rate", _particles.DropRate);
             _updateParticleShader.SetValue("d_drop_rate_bump", _particles.DropRateBump);
@@ -249,44 +283,6 @@ namespace ConsoleApp1
             rts.Dispose();
 
             //Texture.ToFile(_stateParticleTexture1, "_stateParticleTextureAfter.png", ImageFileFormat.Png);
-            
-            /*exchange texture*/
-            _tempTexture = _stateParticleTexture0;
-            _stateParticleTexture0 = _stateParticleTexture1;
-            _stateParticleTexture1 = _tempTexture;
-        }
-        
-        public void updateParticlesTest()
-        {
-            //VertexBuffer indexBuffer = _particles.getIndexBuffer();
-
-            int numParticles = _particles.getnumParticles();
-            int particleRes = _particles.getParticleStateResolution();
-            //Safe in a new texture
-            RenderToSurface rets = new RenderToSurface(_Device, particleRes, particleRes, _stateParticleTexture1.GetLevelDescription(0).Format);
-            Surface surface = _stateParticleTexture1.GetSurfaceLevel(0);
-            rets.BeginScene(surface, new SharpDX.Viewport(0, 0, particleRes, particleRes, 0, 1));
-            rets.Device.Clear(ClearFlags.Target, new SharpDX.ColorBGRA(1.0f, 1.0f, 1.0f, 180.0f), 0.0f, 1);
-
-            /*set parametres shader*/
-            _testUpdateShader.SetTexture("d_wind", _windTexture);
-            _testUpdateShader.SetTexture("d_particles", _stateParticleTexture0);
-            _testUpdateShader.SetValue("d_wind_resolution", new float[] { _windData.width, _windData.height });
-
-            _testUpdateShader.Begin();
-            _testUpdateShader.BeginPass(0);
-
-            VertexBuffer quadBuffer = Util.createBuffer(_Device, new float[] { 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0 });
-            _Device.VertexFormat = VertexFormat.Position;
-            _Device.SetStreamSource(0, quadBuffer, 0, 12);
-            _Device.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
-
-
-            _testUpdateShader.EndPass();
-            _testUpdateShader.End();
-            rets.EndScene(Filter.None);
-            surface.Dispose();
-            rets.Dispose();
 
             /*exchange texture*/
             _tempTexture = _stateParticleTexture0;
@@ -296,7 +292,7 @@ namespace ConsoleApp1
 
         private void InitTexturesScreen()
         {
-            
+
             byte[] emptyPixels = new byte[_width * _height * 4]; //RGBA
             _backGroundTexture = Util.createTexture(_Device, emptyPixels, _width, _height);
             _screenTexture = Util.createTexture(_Device, emptyPixels, _width, _height);
@@ -313,7 +309,6 @@ namespace ConsoleApp1
 
         private void InitTexturesParticles()
         {
-
             try
             {
                 if (!_particles.Equals(null))
@@ -339,7 +334,7 @@ namespace ConsoleApp1
         private void InitializeParticle()
         {
             _particles = new Particle(_Device);
-            _particles.setColorRamp(froidRampColors);
+            //_particles.setColorRamp(froidRampColors);
         }
 
 
@@ -357,7 +352,6 @@ namespace ConsoleApp1
             canvasHeight = height;
             //const gl = this.gl;
             byte[] emptyPixels = new byte[width * height * 4];
-
             // screen textures to hold the drawn screen for the previous and the current frame
             _backGroundTexture = Util.createTexture(_Device, emptyPixels, width, height);
             _screenTexture = Util.createTexture(_Device, emptyPixels, width, height);
@@ -373,6 +367,75 @@ namespace ConsoleApp1
             }
             _windData.image = File.ReadAllBytes(Path.Combine(PathName, fileName + ".png"));
         }
+#region update with Gui
+        void updateFadeValue() {
+            float minimum = 0.96f;
+            float maximum = 0.999f;
+            float range = maximum - minimum;
+            /*set values*/
+            fadeOpacity = minimum + (float)(range * myUserControl.FadeBar.Value) / 100;
+            myUserControl.FadeBox.Text = fadeOpacity.ToString();
+        }
+
+        void updateDropRate() {
+
+            float dropRate = _particles.DropRate;
+            dropRate = dropRateMin + (float)(dropRateMax * myUserControl.DropRateBar.Value) / myUserControl.DropRateBar.Maximum;
+            _particles.DropRate = dropRate;
+            myUserControl.DropRateBox.Text = _particles.DropRate.ToString();
+        }
+
+        void updateDropRateBump()
+        {
+
+            float value = _particles.DropRateBump;
+            value = dropRateMin + (float)(dropRateBumpMax * myUserControl.DropRateBumpBar.Value) / myUserControl.DropRateBumpBar.Maximum;
+            _particles.DropRateBump = value;
+            myUserControl.DropRateBumpBox.Text = _particles.DropRateBump.ToString();
+        }
+
+        void updateSpeed()
+        {
+            float value = speedMin + (float)(speedMax * myUserControl.SpeedBar.Value) / myUserControl.SpeedBar.Maximum;
+            _particles.SpeedFactor = value;
+            myUserControl.SpeedBox.Text = _particles.SpeedFactor.ToString();
+        }
+        
+        void updateParticlesGui()
+        {
+            int value = numParticlesMin + (numParticlesMax * myUserControl.NumParticlesBar.Value) / myUserControl.NumParticlesBar.Maximum;
+            float fade = _particles.FadeOpacity;
+            float dropRate = _particles.DropRate;
+            float dropRateBump = _particles.DropRateBump;
+            float speed = _particles.SpeedFactor;
+            _particles = null;
+            _particles = new Particle(_Device,froidRampColors,fade,speed,dropRate,dropRateBump,value);
+            InitTexturesParticles();
+            myUserControl.NumParticlesBox.Text = _particles.getnumParticles().ToString();
+        }
+#endregion
+        void InitSlidesGui(UserControl myUserControl) {
+            float fadeRang = fadeMax - fadeMin;
+            myUserControl.FadeBar.Value = (int)(((fadeOpacity - fadeMin) * 100) / fadeRang);
+            myUserControl.DropRateBar.Value = (int)(((_particles.DropRate - dropRateMin) * 1000) / (dropRateMax - dropRateMin));
+            myUserControl.DropRateBumpBar.Value = (int)(((_particles.DropRate - dropRateBumpMin) * 1000) / (dropRateBumpMax - dropRateBumpMin));
+            myUserControl.SpeedBar.Value = (int)(((_particles.SpeedFactor - speedMin) * 100) / (speedMax - speedMin));
+            myUserControl.NumParticlesBar.Value = (int)(((_particles.getnumParticles() - numParticlesMin) * 1000) / (numParticlesMax - numParticlesMin));
+            myUserControl.FadeBox.Text = fadeOpacity.ToString();
+            myUserControl.DropRateBox.Text = _particles.DropRate.ToString();
+            myUserControl.DropRateBumpBox.Text = _particles.DropRateBump.ToString();
+            myUserControl.SpeedBox.Text = _particles.SpeedFactor.ToString();
+            myUserControl.NumParticlesBox.Text = _particles.getnumParticles().ToString();
+        }
+
+        void updateValues(){
+            updateFadeValue();
+            updateDropRate();
+            updateDropRateBump();
+            updateSpeed();
+            //updateParticlesGui();//trop couteux
+        }
+
 
         public void Dispose()
         {

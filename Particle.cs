@@ -51,10 +51,10 @@ namespace ConsoleApp1
             };
             /*Default Values*/
             fadeOpacity = 0.999f; // how fast the particle trails fade on each frame
-            speedFactor = 0.2f; // how fast the particles move
+            speedFactor = 0.4f; // how fast the particles move
             dropRate = 0.003f; // how often the particles move to a random place
-            dropRateBump = 0.001f; // drop rate increase relative to individual particle
-            numParticles = 50000;
+            dropRateBump = 0.25f; // drop rate increase relative to individual particle
+            numParticles = 10000;
 
             setnumParticles(numParticles);
             setColorRamp(defaultRampColors);
