@@ -38,18 +38,20 @@ namespace ConsoleApp1
             this.dropRateBox = new System.Windows.Forms.TextBox();
             this.dropRateBumpBox = new System.Windows.Forms.TextBox();
             this.dropRateBumpBar = new System.Windows.Forms.TrackBar();
-            this.numParticlesBar = new System.Windows.Forms.TrackBar();
-            this.numParticlesBox = new System.Windows.Forms.TextBox();
+            this.regSpeedBar = new System.Windows.Forms.TrackBar();
+            this.regSpeedBox = new System.Windows.Forms.TextBox();
             this.lblFade = new System.Windows.Forms.Label();
             this.lblSpeed = new System.Windows.Forms.Label();
             this.lblDropRate = new System.Windows.Forms.Label();
             this.lblDropRateBump = new System.Windows.Forms.Label();
             this.lblParticles = new System.Windows.Forms.Label();
+            this.comboBoxColor = new System.Windows.Forms.ComboBox();
+            this.checkBoxWave = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.fadeBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.speedBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dropRateBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dropRateBumpBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numParticlesBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.regSpeedBar)).BeginInit();
             this.SuspendLayout();
             // 
             // fadeBar
@@ -79,7 +81,6 @@ namespace ConsoleApp1
             this.speedBox.Name = "speedBox";
             this.speedBox.Size = new System.Drawing.Size(39, 20);
             this.speedBox.TabIndex = 3;
-            
             // 
             // dropRateBar
             // 
@@ -94,7 +95,6 @@ namespace ConsoleApp1
             this.dropRateBox.Name = "dropRateBox";
             this.dropRateBox.Size = new System.Drawing.Size(39, 20);
             this.dropRateBox.TabIndex = 5;
-            this.dropRateBox.TextChanged += new System.EventHandler(this.dropRateBox_TextChanged);
             // 
             // dropRateBumpBox
             // 
@@ -110,19 +110,19 @@ namespace ConsoleApp1
             this.dropRateBumpBar.Size = new System.Drawing.Size(153, 45);
             this.dropRateBumpBar.TabIndex = 7;
             // 
-            // numParticlesBar
+            // regSpeedBar
             // 
-            this.numParticlesBar.Location = new System.Drawing.Point(90, 159);
-            this.numParticlesBar.Name = "numParticlesBar";
-            this.numParticlesBar.Size = new System.Drawing.Size(153, 45);
-            this.numParticlesBar.TabIndex = 8;
+            this.regSpeedBar.Location = new System.Drawing.Point(90, 159);
+            this.regSpeedBar.Name = "regSpeedBar";
+            this.regSpeedBar.Size = new System.Drawing.Size(153, 45);
+            this.regSpeedBar.TabIndex = 8;
             // 
-            // numParticlesBox
+            // regSpeedBox
             // 
-            this.numParticlesBox.Location = new System.Drawing.Point(251, 159);
-            this.numParticlesBox.Name = "numParticlesBox";
-            this.numParticlesBox.Size = new System.Drawing.Size(39, 20);
-            this.numParticlesBox.TabIndex = 9;
+            this.regSpeedBox.Location = new System.Drawing.Point(251, 159);
+            this.regSpeedBox.Name = "regSpeedBox";
+            this.regSpeedBox.Size = new System.Drawing.Size(39, 20);
+            this.regSpeedBox.TabIndex = 9;
             // 
             // lblFade
             // 
@@ -165,22 +165,48 @@ namespace ConsoleApp1
             this.lblParticles.AutoSize = true;
             this.lblParticles.Location = new System.Drawing.Point(17, 166);
             this.lblParticles.Name = "lblParticles";
-            this.lblParticles.Size = new System.Drawing.Size(67, 13);
+            this.lblParticles.Size = new System.Drawing.Size(53, 13);
             this.lblParticles.TabIndex = 14;
-            this.lblParticles.Text = "numParticles";
+            this.lblParticles.Text = "regSpeed";
+            // 
+            // comboBoxColor
+            // 
+            this.comboBoxColor.FormattingEnabled = true;
+            this.comboBoxColor.Items.AddRange(new object[] {
+            "Default",
+            "Cool",
+            "Hot",
+            "Gris"});
+            this.comboBoxColor.Location = new System.Drawing.Point(183, 200);
+            this.comboBoxColor.Name = "comboBoxColor";
+            this.comboBoxColor.Size = new System.Drawing.Size(107, 21);
+            this.comboBoxColor.TabIndex = 15;
+            
+            // 
+            // checkBoxWave
+            // 
+            this.checkBoxWave.AutoSize = true;
+            this.checkBoxWave.Location = new System.Drawing.Point(16, 200);
+            this.checkBoxWave.Name = "checkBoxWave";
+            this.checkBoxWave.Size = new System.Drawing.Size(52, 17);
+            this.checkBoxWave.TabIndex = 16;
+            this.checkBoxWave.Text = "night";
+            this.checkBoxWave.UseVisualStyleBackColor = true;
             // 
             // UserControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(26)))), ((int)(((byte)(26)))));
+            this.Controls.Add(this.checkBoxWave);
+            this.Controls.Add(this.comboBoxColor);
             this.Controls.Add(this.lblParticles);
             this.Controls.Add(this.lblDropRateBump);
             this.Controls.Add(this.lblDropRate);
             this.Controls.Add(this.lblSpeed);
             this.Controls.Add(this.lblFade);
-            this.Controls.Add(this.numParticlesBox);
-            this.Controls.Add(this.numParticlesBar);
+            this.Controls.Add(this.regSpeedBox);
+            this.Controls.Add(this.regSpeedBar);
             this.Controls.Add(this.dropRateBumpBar);
             this.Controls.Add(this.dropRateBumpBox);
             this.Controls.Add(this.dropRateBox);
@@ -191,12 +217,12 @@ namespace ConsoleApp1
             this.Controls.Add(this.fadeBar);
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(161)))), ((int)(((byte)(214)))));
             this.Name = "UserControl";
-            this.Size = new System.Drawing.Size(324, 204);
+            this.Size = new System.Drawing.Size(316, 238);
             ((System.ComponentModel.ISupportInitialize)(this.fadeBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.speedBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dropRateBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dropRateBumpBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numParticlesBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.regSpeedBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -208,13 +234,13 @@ namespace ConsoleApp1
         private System.Windows.Forms.TrackBar speedBar;
         private System.Windows.Forms.TrackBar dropRateBar;
         private System.Windows.Forms.TrackBar dropRateBumpBar;
-        private System.Windows.Forms.TrackBar numParticlesBar;
+        private System.Windows.Forms.TrackBar regSpeedBar;
 
         private System.Windows.Forms.TextBox fadeBox;
         private System.Windows.Forms.TextBox speedBox;
         private System.Windows.Forms.TextBox dropRateBox;
         private System.Windows.Forms.TextBox dropRateBumpBox;
-        private System.Windows.Forms.TextBox numParticlesBox;
+        private System.Windows.Forms.TextBox regSpeedBox;
 
         
         private System.Windows.Forms.Label lblFade;
@@ -222,5 +248,7 @@ namespace ConsoleApp1
         private System.Windows.Forms.Label lblDropRate;
         private System.Windows.Forms.Label lblDropRateBump;
         private System.Windows.Forms.Label lblParticles;
+        private System.Windows.Forms.ComboBox comboBoxColor;
+        private System.Windows.Forms.CheckBox checkBoxWave;
     }
 }

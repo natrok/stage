@@ -13,12 +13,6 @@ namespace ConsoleApp1
 {
     public partial class UserControl : System.Windows.Forms.UserControl
     {
-
-        /* LinearGradientBrush myBrush = new LinearGradientBrush(,);
-         myBrush.GradientStops.Add(new GradientStop(Colors.Yellow, 0.0));
-         myBrush.GradientStops.Add(new GradientStop(Colors.Orange, 0.5));
-         myBrush.GradientStops.Add(new GradientStop(Colors.Red, 1.0));
-     */
         public UserControl()
         {
             InitializeComponent();
@@ -30,8 +24,11 @@ namespace ConsoleApp1
             dropRateBar.Maximum = 1000;
             dropRateBumpBar.Minimum = 0;
             dropRateBumpBar.Maximum = 1000;
-            numParticlesBar.Minimum = 0;
-            numParticlesBar.Maximum = 1000;
+            regSpeedBar.Minimum = 0;
+            regSpeedBar.Maximum = 100;
+
+            checkBoxWave.Checked = false;
+            comboBoxColor.SelectedIndex = 0;
 
         }
 
@@ -76,19 +73,41 @@ namespace ConsoleApp1
         }
 
 
-        public TextBox NumParticlesBox
+        public TextBox RegSpeedBox
         {
-            get { return numParticlesBox; }
+            get { return regSpeedBox; }
         }
 
-        public TrackBar NumParticlesBar
+        public TrackBar RegSpeedBar
         {
-            get { return numParticlesBar; }
+            get { return regSpeedBar; }
         }
 
-        private void dropRateBox_TextChanged(object sender, EventArgs e)
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        public CheckBox CheckBoxWave
+        {
+            get { return checkBoxWave; }
+        }
+
+        public ComboBox ComboBoxColor
+        {
+            get { return comboBoxColor; }
+        }
+
+        public void setControl(ControlSettings obj) {
+            this.fadeBar.Scroll += new System.EventHandler(obj.fadeBar_Scroll);
+            this.speedBar.Scroll += new System.EventHandler(obj.speedBar_Scroll);
+            this.regSpeedBar.Scroll += new System.EventHandler(obj.speedRegBar_Scroll);
+            this.dropRateBar.Scroll += new System.EventHandler(obj.dropRate_Scroll);
+            this.DropRateBumpBar.Scroll += new System.EventHandler(obj.dropRateBump_Scroll);
+
+            this.checkBoxWave.CheckedChanged += new System.EventHandler(obj.checkBoxWave_CheckedChanged);
+            this.comboBoxColor.SelectedIndexChanged += new System.EventHandler(obj.comboBoxColor_SelectedIndexChanged);
         }
 
     }

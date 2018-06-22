@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoherentUI\License.cs" />
+    <Compile Include="ControlSettings.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="Program.cs" />
@@ -104,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="CoherentUI\Bin\locales\en-US.pak" />
     <None Include="CoherentUI\Bin\Win32\theme_resources_standard.pak" />
     <None Include="CoherentUI\Bin\Win32\ui_resources_100_percent.pak" />
@@ -330,6 +332,24 @@
     <Content Include="CoherentUI\Debugger\Win64\D3DCompiler_43.dll" />
     <Content Include="CoherentUI\Debugger\Win64\d3dx9_43.dll" />
     <Content Include="CoherentUI\Debugger\Win64\Debugger.exe" />
+    <Content Include="Img\earth.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Img\earth_night.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Img\flecha.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Img\wave.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Img\wave2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Img\wave3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Shaders\testUpdate.fx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

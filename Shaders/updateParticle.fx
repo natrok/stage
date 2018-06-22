@@ -1,4 +1,7 @@
-﻿texture d_wind;
+﻿//----------------------------
+//-------||VARIABLES||--------
+//----------------------------
+texture d_wind;
 texture d_particles;
 
 float2 d_wind_resolution;
@@ -8,6 +11,7 @@ float d_rand_seed;
 float d_speed_factor;
 float d_drop_rate;
 float d_drop_rate_bump;
+float d_speed_reg;
 bool d_voisin;
 
 //SAMPLERS FOR TEXTURE
@@ -23,19 +27,22 @@ sampler_state
 	Texture = <d_particles>;
 };
 
+//----------------------------
+//-----||VERTEX METHODS||-----
+//----------------------------
+
 struct VSOut
 {
 	float4 position : POSITION;
 	float2 v_particle_pos : TEXCOORD0;
 };
 
-VSOut MainVS(float2 a_pos : POSITION)
-{
-	VSOut output;
 
-	output.v_particle_pos = a_pos;
-	output.position = float4(1.0 - 2.0 * a_pos, 0, 1);
-	return output;
+void updatePosition(inout float2 pos, inout float2 velocity) {
+	// update particle position
+	float distortion = cos(radians(pos.y * 180.0 - 90.0));
+	float2 offset = float2(velocity.x / distortion, -velocity.y) * 0.0001 * d_speed_factor;//changement
+	pos = frac(1.0 + pos + offset); //pos + offset = desplacement
 }
 
 
@@ -67,16 +74,23 @@ float2 lookup_wind(float2 uv)
 	return lerp(lerp(tl, tr, f.x), lerp(bl, br, f.x), f.y);
 }
 
-void updatePosition(inout float2 pos, inout float2 velocity) {
 
-	float distortion = cos(radians(pos.y * 180.0 - 90.0));
-	float2 offset = float2(velocity.x / distortion, -velocity.y) * 0.0001 * d_speed_factor;//changement
-																						   // update particle position
-	pos = frac(1.0 + pos + offset); //pos + offset = desplacement
+
+
+//----------------------------
+//-----||VERTEX SHADER||------
+//----------------------------
+VSOut MainVS(float2 a_pos : POSITION)
+{
+	VSOut output;
+	output.v_particle_pos = a_pos;
+	output.position = float4(1.0 - 2.0 * a_pos, 0, 1);	
+	return output;
 }
 
-
-
+//------------------------------
+//-----||FRAGMENT SHADER||------
+//------------------------------
 float4 MainPS(VSOut In) : COLOR0
 {
 	float4 color = tex2D(d_particlesSampler, In.v_particle_pos);
@@ -85,35 +99,31 @@ float4 MainPS(VSOut In) : COLOR0
 		color.g / 255.0 + color.a); // decode particle position from pixel RGBA
 	
 	float2 vent;
-	if (d_voisin){
+	if (d_voisin)
 	 vent = lookup_wind(pos);
-	}
-	else {
+	else 
 	 vent = lookup_wind_px(pos);
-	}
-
+	
 	float2 velocity = lerp(d_wind_min, d_wind_max, vent);
 
 	//float2 velocity = lerp(d_wind_min, d_wind_max, lookup_wind(pos));
-	float speed_t = length(velocity) / length(d_wind_max);
+	float speed_t = length(velocity) / length(d_wind_max);	
+	float speed_u = d_speed_reg;
 
 	// take EPSG:4236 distortion into account for calculating where the particle moved
 	//float distortion = cos(radians(pos.y * 180.0 - 90.0));
 	//float2 offset = float2(velocity.x / distortion, -velocity.y) * 0.0001 * d_speed_factor;
-	//
-	//// update particle position, wrapping around the date line
-	//pos = frac(1.0 + pos + offset);
 
-	updatePosition(pos, velocity);
+	// update particle position, wrapping around the date line
+	float2 posini = pos;
+	updatePosition(pos, velocity);	
 
 	// a random seed to use for the particle drop
 	float2 seed = (pos + In.v_particle_pos) * d_rand_seed; /*Important*/
-
-	//speed_t = 0.50f;
-
+	
 	// drop rate is a chance a particle will restart at random position, to avoid degeneration
-	float drop_rate = d_drop_rate + speed_t * d_drop_rate_bump;
-	float drop = step(1.0 - drop_rate, rand(seed)); //co,pare two values
+	float drop_rate = d_drop_rate + speed_u * d_drop_rate_bump;
+	float drop = step(1.0 - drop_rate, rand(seed)); //compare two values
 
 	drop = step(1.0 - drop_rate, rand(seed));
 
@@ -126,7 +136,6 @@ float4 MainPS(VSOut In) : COLOR0
 	float4 res = float4(
 		frac(pos * 255.0),
 		floor(pos * 255.0) / 255.0);
-
 	return res;
 }
 

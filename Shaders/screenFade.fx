@@ -38,6 +38,7 @@ VSOut main_VS(float2 a_pos : POSITION) //intended use of the variable
 float4 main_FG(VSOut In): COLOR0
 {
 	float4 color = tex2D(d_screenSampler, 1.0 - In.v_tex_pos);
+
 	// a hack to guarantee opacity fade out even with a value close to 1.0
 	float4 res = float4(floor(255.0 * color * d_opacity) / 255.0);
 	return res;

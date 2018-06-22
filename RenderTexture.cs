@@ -15,7 +15,7 @@ namespace ConsoleApp1
 
         /*rendering in a texture*/
         private Surface RenderSurface;
-        private Texture RenderTexture2D;        
+  
         private RenderToSurface RenderToSurface;
         private int height, width;
         private Device device;
@@ -100,7 +100,6 @@ namespace ConsoleApp1
         public void Dispose()
         {
             RenderSurface.Dispose();
-            RenderTexture2D.Dispose();
             RenderToSurface.Dispose();
         }
     }

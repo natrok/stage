@@ -21,10 +21,13 @@ namespace ConsoleApp1
         private float speedFactor;
         private float dropRate;
         private float dropRateBump;
+        private float speedReg;
 
         private Texture colorRampTexture;
         private Texture particleStateTexture0;
         private Texture particleStateTexture1;
+
+
         private Device _Device;
 
         private int particleStateResolution;
@@ -50,11 +53,12 @@ namespace ConsoleApp1
             new Tuple<double, uint>(1.0, 0xffd53e4f)
             };
             /*Default Values*/
-            fadeOpacity = 0.999f; // how fast the particle trails fade on each frame
-            speedFactor = 0.4f; // how fast the particles move
-            dropRate = 0.003f; // how often the particles move to a random place
-            dropRateBump = 0.25f; // drop rate increase relative to individual particle
-            numParticles = 10000;
+            fadeOpacity = 0.99f; // how fast the particle trails fade on each frame
+            speedFactor = 0.1f; // how fast the particles move
+            dropRate = 0.006f; // how often the particles move to a random place
+            dropRateBump = 0.006f; // drop rate increase relative to individual particle
+            numParticles = 5000;
+            speedReg = 0.2f;
 
             setnumParticles(numParticles);
             setColorRamp(defaultRampColors);
@@ -83,14 +87,21 @@ namespace ConsoleApp1
         public void setColorRamp(List<Tuple<double, uint>> colors)
         {
             // lookup texture for colorizing the particles according to their speed
-            colorRampTexture = Util.createTexture(_Device, getColorRamp(colors), 16, 16);
+            colorRampTexture = Util.createTexture(_Device, createColorRamp(colors), 16, 16);
+        }
+
+        public List<Tuple<double, uint>> getColorRamp()
+        {
+
+            return defaultRampColors;
+            //colorRampTexture = Util.createTexture(_Device, getColorRamp(colors), 16, 16);
         }
 
         public Texture getColorRampTexture() {
             return colorRampTexture;
         }
 
-        byte[] getColorRamp(List<Tuple<double, uint>> colors)
+        byte[] createColorRamp(List<Tuple<double, uint>> colors)
         {
             int width = 256; //16*16
             int height = 1;
@@ -204,6 +215,12 @@ namespace ConsoleApp1
         {
             get { return dropRateBump; }
             set { this.dropRateBump = value; }
+        }
+
+        public float SpeedReg
+        {
+            get { return speedReg; }
+            set { this.speedReg = value; }
         }
 
         /*a tester*/
