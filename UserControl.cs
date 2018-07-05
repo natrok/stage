@@ -27,6 +27,7 @@ namespace ConsoleApp1
             regSpeedBar.Minimum = 0;
             regSpeedBar.Maximum = 100;
 
+            checkBoxPoint.Checked = false;
             checkBoxWave.Checked = false;
             comboBoxColor.SelectedIndex = 0;
 
@@ -38,6 +39,7 @@ namespace ConsoleApp1
 
         public TrackBar FadeBar {
             get { return fadeBar; }
+            set { this.fadeBar = value; }
         }
 
 
@@ -89,6 +91,11 @@ namespace ConsoleApp1
 
         }
 
+        public CheckBox CheckBoxPoint
+        {
+            get { return checkBoxPoint; }
+        }
+
         public CheckBox CheckBoxWave
         {
             get { return checkBoxWave; }
@@ -106,6 +113,7 @@ namespace ConsoleApp1
             this.dropRateBar.Scroll += new System.EventHandler(obj.dropRate_Scroll);
             this.DropRateBumpBar.Scroll += new System.EventHandler(obj.dropRateBump_Scroll);
 
+            this.checkBoxPoint.CheckedChanged += new System.EventHandler(obj.checkBoxPoint_CheckedChanged);
             this.checkBoxWave.CheckedChanged += new System.EventHandler(obj.checkBoxWave_CheckedChanged);
             this.comboBoxColor.SelectedIndexChanged += new System.EventHandler(obj.comboBoxColor_SelectedIndexChanged);
         }

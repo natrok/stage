@@ -58,6 +58,7 @@ namespace ConsoleApp1
 
         public static Effect compileEffectProgram(Device device, string effectFilePath)
         {
+
             Effect res = Effect.FromFile(device, effectFilePath, ShaderFlags.UseLegacyD3DX9_31Dll);
             return res;
         }

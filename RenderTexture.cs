@@ -44,7 +44,7 @@ namespace ConsoleApp1
             program.BeginPass(0); 
             
             device.VertexFormat = VertexFormat.Position | VertexFormat.Diffuse | VertexFormat.Texture1;
-            device.SetStreamSource(0, triangleVertexBuffer, 0, Utilities.SizeOf<MySharpDXGame.VertexPositionColor>());
+            device.SetStreamSource(0, triangleVertexBuffer, 0, Utilities.SizeOf<MySharpDXGame.VertexPositionColorTex>());
 
             //primitive topologie
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, 1); //number triangles and index init

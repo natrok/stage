@@ -23,6 +23,8 @@ namespace ConsoleApp1
         private float dropRateBump;
         private float speedReg;
 
+        private bool isWave;
+
         private Texture colorRampTexture;
         private Texture particleStateTexture0;
         private Texture particleStateTexture1;
@@ -55,18 +57,21 @@ namespace ConsoleApp1
             /*Default Values*/
             fadeOpacity = 0.99f; // how fast the particle trails fade on each frame
             speedFactor = 0.1f; // how fast the particles move
+
             dropRate = 0.006f; // how often the particles move to a random place
             dropRateBump = 0.006f; // drop rate increase relative to individual particle
-            numParticles = 5000;
             speedReg = 0.2f;
 
+            numParticles = 6400;
             setnumParticles(numParticles);
             setColorRamp(defaultRampColors);
+            isWave = false;
+
         }
 
 
         public Particle(Device _Device, List<Tuple<double, uint>> defaultRampColors, 
-           float fadeOpacity, float speedFactor, float dropRate, float dropRateBump, int numParticles)
+           float fadeOpacity, float speedFactor, float dropRate, float dropRateBump, int numParticles, float life, bool isWave)
         {
             this._Device = _Device;
 
@@ -81,6 +86,8 @@ namespace ConsoleApp1
             setnumParticles(numParticles);
 
             setColorRamp( defaultRampColors);
+            this.isWave = isWave;
+
         }
 
 
@@ -141,6 +148,8 @@ namespace ConsoleApp1
             return res;
         }
 
+
+
         private void setnumParticles(int numParticles)
         {
             // we create a square texture where each pixel will hold a particle position encoded as RGBA
@@ -163,13 +172,14 @@ namespace ConsoleApp1
             float[] particleIndices = new float[numParticles];
             for (int i = 0; i < numParticles; i++)
                 particleIndices[i] = i;
-
+            //set new number of particles
+            this.numParticles = numParticles;
             particleIndexBuffer = Util.createBuffer(_Device, particleIndices);
         }
 
         public int getnumParticles()
         {
-            return numParticles;
+            return this.numParticles;
         }
 
         public int getParticleStateResolution()
@@ -221,6 +231,13 @@ namespace ConsoleApp1
         {
             get { return speedReg; }
             set { this.speedReg = value; }
+        }
+
+
+        public bool IsWave
+        {
+            get { return isWave; }
+            set { this.isWave = value; }
         }
 
         /*a tester*/

@@ -46,6 +46,7 @@ namespace ConsoleApp1
             this.lblDropRateBump = new System.Windows.Forms.Label();
             this.lblParticles = new System.Windows.Forms.Label();
             this.comboBoxColor = new System.Windows.Forms.ComboBox();
+            this.checkBoxPoint = new System.Windows.Forms.CheckBox();
             this.checkBoxWave = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.fadeBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.speedBar)).BeginInit();
@@ -181,17 +182,27 @@ namespace ConsoleApp1
             this.comboBoxColor.Name = "comboBoxColor";
             this.comboBoxColor.Size = new System.Drawing.Size(107, 21);
             this.comboBoxColor.TabIndex = 15;
-            
             // 
             // checkBoxWave
             // 
+            this.checkBoxPoint.AutoSize = true;
+            this.checkBoxPoint.Location = new System.Drawing.Point(16, 200);
+            this.checkBoxPoint.Name = "checkBoxPoint";
+            this.checkBoxPoint.Size = new System.Drawing.Size(49, 17);
+            this.checkBoxPoint.TabIndex = 16;
+            this.checkBoxPoint.Text = "night";
+            this.checkBoxPoint.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
             this.checkBoxWave.AutoSize = true;
-            this.checkBoxWave.Location = new System.Drawing.Point(16, 200);
+            this.checkBoxWave.Location = new System.Drawing.Point(71, 200);
             this.checkBoxWave.Name = "checkBoxWave";
-            this.checkBoxWave.Size = new System.Drawing.Size(52, 17);
-            this.checkBoxWave.TabIndex = 16;
-            this.checkBoxWave.Text = "night";
+            this.checkBoxWave.Size = new System.Drawing.Size(80, 17);
+            this.checkBoxWave.TabIndex = 17;
+            this.checkBoxWave.Text = "wave";
             this.checkBoxWave.UseVisualStyleBackColor = true;
+            
             // 
             // UserControl
             // 
@@ -199,6 +210,7 @@ namespace ConsoleApp1
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(26)))), ((int)(((byte)(26)))));
             this.Controls.Add(this.checkBoxWave);
+            this.Controls.Add(this.checkBoxPoint);
             this.Controls.Add(this.comboBoxColor);
             this.Controls.Add(this.lblParticles);
             this.Controls.Add(this.lblDropRateBump);
@@ -249,6 +261,7 @@ namespace ConsoleApp1
         private System.Windows.Forms.Label lblDropRateBump;
         private System.Windows.Forms.Label lblParticles;
         private System.Windows.Forms.ComboBox comboBoxColor;
+        private System.Windows.Forms.CheckBox checkBoxPoint;
         private System.Windows.Forms.CheckBox checkBoxWave;
     }
 }

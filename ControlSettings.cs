@@ -16,7 +16,7 @@ namespace ConsoleApp1
         private float dropRateMin = 0.0f, dropRateMax = 0.1f;
         private float speedMin = 0.05f, speedMax = 1.0f;
         private float dropRateBumpMin = 0, dropRateBumpMax = 0.2f;
-        private int numParticlesMin = 1024, numParticlesMax = 58000;
+        //private int numParticlesMin = 1024, numParticlesMax = 58000;
         private float regSpeedMin = 0.01f, regSpeedMax = 1.0f;
 
         private List<Tuple<double, uint>> froidRampColors, defaultRampColors, hotRampColors, gris;
@@ -63,9 +63,14 @@ namespace ConsoleApp1
             myUserControl.DropRateBumpBox.Text = myParticle.DropRateBump.ToString();
         }
 
+        public void checkBoxPoint_CheckedChanged(object sender, EventArgs e)
+        {
+            
+        }
+
         public void checkBoxWave_CheckedChanged(object sender, EventArgs e)
         {
-
+            myParticle.IsWave = myUserControl.CheckBoxWave.Checked; 
         }
 
         public void comboBoxColor_SelectedIndexChanged(object sender, EventArgs e)
