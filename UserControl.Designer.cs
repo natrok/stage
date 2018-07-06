@@ -2,7 +2,7 @@
 
 namespace ConsoleApp1
 {
-    partial class UserControl
+    partial class UserView
     {
         /// <summary> 
         /// Required designer variable.
@@ -48,79 +48,87 @@ namespace ConsoleApp1
             this.comboBoxColor = new System.Windows.Forms.ComboBox();
             this.checkBoxPoint = new System.Windows.Forms.CheckBox();
             this.checkBoxWave = new System.Windows.Forms.CheckBox();
+            this.particlesBox = new System.Windows.Forms.TextBox();
+            this.particlesBar = new System.Windows.Forms.TrackBar();
+            this.lblNumParticles = new System.Windows.Forms.Label();
+            this.opacityBox = new System.Windows.Forms.TextBox();
+            this.opacityBar = new System.Windows.Forms.TrackBar();
+            this.lblOpacity = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.fadeBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.speedBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dropRateBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dropRateBumpBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.regSpeedBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.particlesBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.opacityBar)).BeginInit();
             this.SuspendLayout();
             // 
             // fadeBar
             // 
-            this.fadeBar.Location = new System.Drawing.Point(92, 14);
+            this.fadeBar.Location = new System.Drawing.Point(89, 82);
             this.fadeBar.Name = "fadeBar";
             this.fadeBar.Size = new System.Drawing.Size(153, 45);
             this.fadeBar.TabIndex = 0;
             // 
             // speedBar
             // 
-            this.speedBar.Location = new System.Drawing.Point(90, 52);
+            this.speedBar.Location = new System.Drawing.Point(89, 117);
             this.speedBar.Name = "speedBar";
             this.speedBar.Size = new System.Drawing.Size(153, 45);
             this.speedBar.TabIndex = 1;
             // 
             // fadeBox
             // 
-            this.fadeBox.Location = new System.Drawing.Point(251, 14);
+            this.fadeBox.Location = new System.Drawing.Point(250, 79);
             this.fadeBox.Name = "fadeBox";
             this.fadeBox.Size = new System.Drawing.Size(39, 20);
             this.fadeBox.TabIndex = 2;
             // 
             // speedBox
             // 
-            this.speedBox.Location = new System.Drawing.Point(251, 52);
+            this.speedBox.Location = new System.Drawing.Point(250, 117);
             this.speedBox.Name = "speedBox";
             this.speedBox.Size = new System.Drawing.Size(39, 20);
             this.speedBox.TabIndex = 3;
             // 
             // dropRateBar
             // 
-            this.dropRateBar.Location = new System.Drawing.Point(90, 92);
+            this.dropRateBar.Location = new System.Drawing.Point(89, 157);
             this.dropRateBar.Name = "dropRateBar";
             this.dropRateBar.Size = new System.Drawing.Size(153, 45);
             this.dropRateBar.TabIndex = 4;
             // 
             // dropRateBox
             // 
-            this.dropRateBox.Location = new System.Drawing.Point(251, 92);
+            this.dropRateBox.Location = new System.Drawing.Point(250, 157);
             this.dropRateBox.Name = "dropRateBox";
             this.dropRateBox.Size = new System.Drawing.Size(39, 20);
             this.dropRateBox.TabIndex = 5;
             // 
             // dropRateBumpBox
             // 
-            this.dropRateBumpBox.Location = new System.Drawing.Point(251, 126);
+            this.dropRateBumpBox.Location = new System.Drawing.Point(250, 196);
             this.dropRateBumpBox.Name = "dropRateBumpBox";
             this.dropRateBumpBox.Size = new System.Drawing.Size(39, 20);
             this.dropRateBumpBox.TabIndex = 6;
             // 
             // dropRateBumpBar
             // 
-            this.dropRateBumpBar.Location = new System.Drawing.Point(90, 126);
+            this.dropRateBumpBar.Location = new System.Drawing.Point(89, 196);
             this.dropRateBumpBar.Name = "dropRateBumpBar";
             this.dropRateBumpBar.Size = new System.Drawing.Size(153, 45);
             this.dropRateBumpBar.TabIndex = 7;
             // 
             // regSpeedBar
             // 
-            this.regSpeedBar.Location = new System.Drawing.Point(90, 159);
+            this.regSpeedBar.Location = new System.Drawing.Point(89, 238);
             this.regSpeedBar.Name = "regSpeedBar";
             this.regSpeedBar.Size = new System.Drawing.Size(153, 45);
             this.regSpeedBar.TabIndex = 8;
             // 
             // regSpeedBox
             // 
-            this.regSpeedBox.Location = new System.Drawing.Point(251, 159);
+            this.regSpeedBox.Location = new System.Drawing.Point(250, 238);
             this.regSpeedBox.Name = "regSpeedBox";
             this.regSpeedBox.Size = new System.Drawing.Size(39, 20);
             this.regSpeedBox.TabIndex = 9;
@@ -128,16 +136,16 @@ namespace ConsoleApp1
             // lblFade
             // 
             this.lblFade.AutoSize = true;
-            this.lblFade.Location = new System.Drawing.Point(17, 21);
+            this.lblFade.Location = new System.Drawing.Point(15, 82);
             this.lblFade.Name = "lblFade";
-            this.lblFade.Size = new System.Drawing.Size(64, 13);
+            this.lblFade.Size = new System.Drawing.Size(28, 13);
             this.lblFade.TabIndex = 10;
-            this.lblFade.Text = "fadeOpacity";
+            this.lblFade.Text = "fade";
             // 
             // lblSpeed
             // 
             this.lblSpeed.AutoSize = true;
-            this.lblSpeed.Location = new System.Drawing.Point(17, 59);
+            this.lblSpeed.Location = new System.Drawing.Point(15, 120);
             this.lblSpeed.Name = "lblSpeed";
             this.lblSpeed.Size = new System.Drawing.Size(68, 13);
             this.lblSpeed.TabIndex = 11;
@@ -146,7 +154,8 @@ namespace ConsoleApp1
             // lblDropRate
             // 
             this.lblDropRate.AutoSize = true;
-            this.lblDropRate.Location = new System.Drawing.Point(17, 99);
+            this.lblDropRate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(140)))), ((int)(((byte)(47)))));
+            this.lblDropRate.Location = new System.Drawing.Point(15, 160);
             this.lblDropRate.Name = "lblDropRate";
             this.lblDropRate.Size = new System.Drawing.Size(51, 13);
             this.lblDropRate.TabIndex = 12;
@@ -155,7 +164,8 @@ namespace ConsoleApp1
             // lblDropRateBump
             // 
             this.lblDropRateBump.AutoSize = true;
-            this.lblDropRateBump.Location = new System.Drawing.Point(17, 133);
+            this.lblDropRateBump.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(140)))), ((int)(((byte)(47)))));
+            this.lblDropRateBump.Location = new System.Drawing.Point(15, 199);
             this.lblDropRateBump.Name = "lblDropRateBump";
             this.lblDropRateBump.Size = new System.Drawing.Size(78, 13);
             this.lblDropRateBump.TabIndex = 13;
@@ -164,7 +174,8 @@ namespace ConsoleApp1
             // lblParticles
             // 
             this.lblParticles.AutoSize = true;
-            this.lblParticles.Location = new System.Drawing.Point(17, 166);
+            this.lblParticles.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(140)))), ((int)(((byte)(47)))));
+            this.lblParticles.Location = new System.Drawing.Point(15, 241);
             this.lblParticles.Name = "lblParticles";
             this.lblParticles.Size = new System.Drawing.Size(53, 13);
             this.lblParticles.TabIndex = 14;
@@ -178,37 +189,90 @@ namespace ConsoleApp1
             "Cool",
             "Hot",
             "Gris"});
-            this.comboBoxColor.Location = new System.Drawing.Point(183, 200);
+            this.comboBoxColor.Location = new System.Drawing.Point(182, 288);
             this.comboBoxColor.Name = "comboBoxColor";
             this.comboBoxColor.Size = new System.Drawing.Size(107, 21);
             this.comboBoxColor.TabIndex = 15;
             // 
-            // checkBoxWave
+            // checkBoxPoint
             // 
             this.checkBoxPoint.AutoSize = true;
-            this.checkBoxPoint.Location = new System.Drawing.Point(16, 200);
+            this.checkBoxPoint.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(140)))), ((int)(((byte)(47)))));
+            this.checkBoxPoint.Location = new System.Drawing.Point(18, 269);
             this.checkBoxPoint.Name = "checkBoxPoint";
-            this.checkBoxPoint.Size = new System.Drawing.Size(49, 17);
+            this.checkBoxPoint.Size = new System.Drawing.Size(42, 17);
             this.checkBoxPoint.TabIndex = 16;
-            this.checkBoxPoint.Text = "night";
+            this.checkBoxPoint.Text = "Old";
             this.checkBoxPoint.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // checkBoxWave
             // 
             this.checkBoxWave.AutoSize = true;
-            this.checkBoxWave.Location = new System.Drawing.Point(71, 200);
+            this.checkBoxWave.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(241)))), ((int)(((byte)(214)))));
+            this.checkBoxWave.Location = new System.Drawing.Point(18, 292);
             this.checkBoxWave.Name = "checkBoxWave";
-            this.checkBoxWave.Size = new System.Drawing.Size(80, 17);
+            this.checkBoxWave.Size = new System.Drawing.Size(52, 17);
             this.checkBoxWave.TabIndex = 17;
             this.checkBoxWave.Text = "wave";
             this.checkBoxWave.UseVisualStyleBackColor = true;
-            
             // 
-            // UserControl
+            // particlesBox
+            // 
+            this.particlesBox.Location = new System.Drawing.Point(250, 3);
+            this.particlesBox.Name = "particlesBox";
+            this.particlesBox.Size = new System.Drawing.Size(39, 20);
+            this.particlesBox.TabIndex = 18;
+            // 
+            // particlesBar
+            // 
+            this.particlesBar.Location = new System.Drawing.Point(89, 3);
+            this.particlesBar.Name = "particlesBar";
+            this.particlesBar.Size = new System.Drawing.Size(153, 45);
+            this.particlesBar.TabIndex = 19;
+            // 
+            // lblNumParticles
+            // 
+            this.lblNumParticles.AutoSize = true;
+            this.lblNumParticles.Location = new System.Drawing.Point(15, 10);
+            this.lblNumParticles.Name = "lblNumParticles";
+            this.lblNumParticles.Size = new System.Drawing.Size(75, 13);
+            this.lblNumParticles.TabIndex = 20;
+            this.lblNumParticles.Text = "Num. Particles";
+            // 
+            // opacityBox
+            // 
+            this.opacityBox.Location = new System.Drawing.Point(250, 38);
+            this.opacityBox.Name = "opacityBox";
+            this.opacityBox.Size = new System.Drawing.Size(39, 20);
+            this.opacityBox.TabIndex = 21;
+            // 
+            // opacityBar
+            // 
+            this.opacityBar.Location = new System.Drawing.Point(89, 38);
+            this.opacityBar.Name = "opacityBar";
+            this.opacityBar.Size = new System.Drawing.Size(153, 45);
+            this.opacityBar.TabIndex = 22;
+            // 
+            // lblOpacity
+            // 
+            this.lblOpacity.AutoSize = true;
+            this.lblOpacity.Location = new System.Drawing.Point(15, 38);
+            this.lblOpacity.Name = "lblOpacity";
+            this.lblOpacity.Size = new System.Drawing.Size(43, 13);
+            this.lblOpacity.TabIndex = 23;
+            this.lblOpacity.Text = "Opacity";
+            // 
+            // UserView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(26)))), ((int)(((byte)(26)))));
+            this.Controls.Add(this.lblOpacity);
+            this.Controls.Add(this.opacityBar);
+            this.Controls.Add(this.opacityBox);
+            this.Controls.Add(this.lblNumParticles);
+            this.Controls.Add(this.particlesBar);
+            this.Controls.Add(this.particlesBox);
             this.Controls.Add(this.checkBoxWave);
             this.Controls.Add(this.checkBoxPoint);
             this.Controls.Add(this.comboBoxColor);
@@ -228,13 +292,15 @@ namespace ConsoleApp1
             this.Controls.Add(this.speedBar);
             this.Controls.Add(this.fadeBar);
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(161)))), ((int)(((byte)(214)))));
-            this.Name = "UserControl";
-            this.Size = new System.Drawing.Size(316, 238);
+            this.Name = "UserView";
+            this.Size = new System.Drawing.Size(316, 316);
             ((System.ComponentModel.ISupportInitialize)(this.fadeBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.speedBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dropRateBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dropRateBumpBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.regSpeedBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.particlesBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.opacityBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -247,21 +313,34 @@ namespace ConsoleApp1
         private System.Windows.Forms.TrackBar dropRateBar;
         private System.Windows.Forms.TrackBar dropRateBumpBar;
         private System.Windows.Forms.TrackBar regSpeedBar;
+        private System.Windows.Forms.TrackBar opacityBar;
+        private System.Windows.Forms.TrackBar particlesBar;
 
         private System.Windows.Forms.TextBox fadeBox;
         private System.Windows.Forms.TextBox speedBox;
         private System.Windows.Forms.TextBox dropRateBox;
         private System.Windows.Forms.TextBox dropRateBumpBox;
         private System.Windows.Forms.TextBox regSpeedBox;
+        private System.Windows.Forms.TextBox opacityBox;
+        private System.Windows.Forms.TextBox particlesBox;
 
-        
         private System.Windows.Forms.Label lblFade;
         private System.Windows.Forms.Label lblSpeed;
         private System.Windows.Forms.Label lblDropRate;
         private System.Windows.Forms.Label lblDropRateBump;
         private System.Windows.Forms.Label lblParticles;
+        private System.Windows.Forms.Label lblNumParticles;
+        private System.Windows.Forms.Label lblOpacity;
+
         private System.Windows.Forms.ComboBox comboBoxColor;
+
         private System.Windows.Forms.CheckBox checkBoxPoint;
         private System.Windows.Forms.CheckBox checkBoxWave;
+
+
+
+
+
+
     }
 }

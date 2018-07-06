@@ -36,9 +36,9 @@ namespace ConsoleApp1
         private int dx = 0, min_range,max_range;
         private float[] d = { 0.2f, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f, 0.6f, 0.2f };
 
-        private float[] f = { 0.1f, 0.75f, 0.9f, 1.0f, 1.0f, 0.9f, 0.75f, 0.2f };
+        private float[] f = { 0.3f, 0.5f, 0.8f, 1.0f, 1.0f, 0.8f, 0.5f, 0.1f };
 
-        private float[] t = { 0.1f, 0.5f, 0.9f, 1.0f, 1.0f, 1.0f, 1.0f, 0.9f, 0.5f, 0.2f };
+        private float[] t = { 0.1f, 0.5f, 0.75f, 1.0f, 1.0f, 1.0f, 1.0f, 0.75f, 0.5f, 0.2f };
 
         
 
@@ -61,7 +61,7 @@ namespace ConsoleApp1
         private Texture _stateParticleTexture0, _stateParticleTexture1;
 
         private Texture _windTexture, _waveTexture;
-        private Texture _earthTexture, _earthNightTexture;
+        private Texture _earthTexture, _earthWhite, _earthNightTexture;
         
         private int canvasWidth;
         private int canvasHeight;
@@ -75,7 +75,7 @@ namespace ConsoleApp1
 
       
         /*View*/
-        private UserControl myUserControl;
+        private UserView myUserView;
         private ControlSettings controller;
 
         private Stopwatch st = new Stopwatch();
@@ -91,8 +91,8 @@ namespace ConsoleApp1
             _RenderForm.ClientSize = new System.Drawing.Size(_width, _height);
             _RenderForm.AllowUserResizing = false;
 
-            myUserControl = new UserControl();
-            _RenderForm.Controls.Add(myUserControl);                       
+            myUserView = new UserView();
+            _RenderForm.Controls.Add(myUserView);                       
 
             PresentParameters p = new PresentParameters();
             p.Windowed = true;
@@ -118,13 +118,16 @@ namespace ConsoleApp1
             InitializeRenderTexture();
             InitTexturesScreen();
             InitializeParticle();
-            InitSlidesGui(myUserControl);
             InitTexturesParticles();
-            InitializeShaders();
+            InitializeShaders();                        
+            
 
             //CONTROL
-            controller = new ControlSettings(myUserControl,_particles);
-            myUserControl.setControl(controller);
+            controller = new ControlSettings(myUserView,_particles);
+            controller.InitSlidesGui();
+
+            //InitSlidesGui(myUserView);
+            myUserView.setControl(controller);
             //set viewport
             Resize(_width, _height);
         }
@@ -143,7 +146,14 @@ namespace ConsoleApp1
             _Device.SetRenderState(RenderState.ZWriteEnable, false);
             _Device.SetRenderState(RenderState.StencilEnable, false);
             _Device.SetRenderState(RenderState.CullMode, Cull.None);
-                        
+
+            if (controller.IsChangedParticle) {
+                _stateParticleTexture0 = _particles.getParticleStateTexture();
+                _stateParticleTexture1 = _particles.getParticleStateTexture1();
+                controller.IsChangedParticle = false;
+            }
+
+
             updateValues();
             Draw();
             updateParticles();         
@@ -154,10 +164,7 @@ namespace ConsoleApp1
             RenderToSurface rts = new RenderToSurface(_Device, _width, _height, _screenTexture.GetLevelDescription(0).Format);
             Surface surface = _screenTexture.GetSurfaceLevel(0);
             rts.BeginScene(surface, new SharpDX.Viewport(0, 0, _width, _height, 0, 1));
-            drawTexture(_backGroundTexture, _particles.FadeOpacity);
-
-            if (_pointBool)
-            drawParticles();
+            drawTexture(_backGroundTexture, _particles.Fade);
 
             instanceParticles();  
 
@@ -173,7 +180,11 @@ namespace ConsoleApp1
             _Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha); //SourceColor SourceAlpha
             _Device.SetRenderState(RenderState.DestinationBlend, Blend.DestinationAlpha); //InverseSourceColor DestinationAlpha 
 
-            drawTexture(_earthTexture, 1.0f);
+            if(_pointBool)
+                drawTexture(_earthTexture, 1.0f);
+            else
+                drawTexture(_earthWhite, 1.0f);
+
             drawTexture(_screenTexture, 1.0f);
             _Device.SetRenderState(RenderState.AlphaBlendEnable, false);
             _Device.EndScene();
@@ -184,35 +195,16 @@ namespace ConsoleApp1
             _screenTexture = temp;
         }
 
-        /*Shader*/
-        void drawTexture(Texture texture, float opacity)
-        {
-            _screenShader.SetTexture("d_screen", texture);
-            _Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
-            _Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
-            _Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
-            _Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
-
-            _screenShader.SetValue("d_opacity", _particles.FadeOpacity);
-            // patch pour directx 9, ne pas avoir se code en open gl es
-            _screenShader.SetValue("d_miPixX", -0.5f / texture.GetLevelDescription(0).Width);
-            _screenShader.SetValue("d_miPixY", -0.5f / texture.GetLevelDescription(0).Height);
-            _screenShader.Begin();
-            _screenShader.BeginPass(0);
-            UtilDraw.drawInQuad(_Device);
-            _screenShader.EndPass();
-            _screenShader.End();
-        }
 
         public void drawParticles()
         {
             _Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-            _Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+            _Device.SetRenderState(RenderState.SourceBlend, Blend.SourceColor);
             _Device.SetRenderState(RenderState.DestinationBlend, Blend.DestinationAlpha);
             VertexBuffer indexBuffer = _particles.getIndexBuffer();
             int numParticles = _particles.getnumParticles();
             _Device.SetRenderState(RenderState.PointSpriteEnable, _wavesBool);
-            
+
             /*set textures*/
             _drawParticleShader.SetTexture("d_wind", _windTexture);
             _Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
@@ -246,10 +238,31 @@ namespace ConsoleApp1
             _drawParticleShader.BeginPass(0);
             _Device.VertexFormat = VertexFormat.Position;
             _Device.SetStreamSource(0, indexBuffer, 0, 4);
-            _Device.DrawPrimitives(PrimitiveType.PointList, 0, numParticles);            
+            _Device.DrawPrimitives(PrimitiveType.PointList, 0, numParticles);
             _drawParticleShader.EndPass();
             _drawParticleShader.End();
 
+        }
+
+        #region Draw Particles
+        /*Shader*/
+        void drawTexture(Texture texture, float opacity)
+        {
+            _screenShader.SetTexture("d_screen", texture);
+            _Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
+            _Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
+            _Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Point);
+            _Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Point);
+
+            _screenShader.SetValue("d_opacity", _particles.Fade);
+            // patch pour directx 9, ne pas avoir se code en open gl es
+            _screenShader.SetValue("d_miPixX", -0.5f / texture.GetLevelDescription(0).Width);
+            _screenShader.SetValue("d_miPixY", -0.5f / texture.GetLevelDescription(0).Height);
+            _screenShader.Begin();
+            _screenShader.BeginPass(0);
+            UtilDraw.drawInQuad(_Device);
+            _screenShader.EndPass();
+            _screenShader.End();
         }
 
         private void instanceParticles()
@@ -259,9 +272,8 @@ namespace ConsoleApp1
             _Device.SetRenderState(RenderState.StencilEnable, false);
             _Device.SetRenderState(RenderState.CullMode, Cull.None);
 
-            //float[]f = t;
-
-            //_Device.BeginScene();
+            float[]f = t;
+            
             _instanceShader.Begin();
             _instanceShader.BeginPass(0);
 
@@ -303,7 +315,7 @@ namespace ConsoleApp1
 
             //// time for update fade value for each particle il faut que sois toujours le meme
             float time = ft.ElapsedMilliseconds;
-            if (time > 360f)
+            if (time > 500f)
             {
                 ft.Restart();
                 dx = (dx + 1 > f.Length - 1) ? 0 : dx += 1;
@@ -336,8 +348,13 @@ namespace ConsoleApp1
             _Device.VertexFormat = VertexFormat.PositionW;
             _Device.SetStreamSource(0, _quadVertexBuffer, 0, Utilities.SizeOf<Vector4>());
 
-            //The first call to SetStreamSourceFreq says that stream 0 contains n instances of 
-            //m vertices. SetStreamSource then binds stream 0 to the geometry vertex buffer. 
+            //Set shaders Values. 
+            _instanceShader.SetTexture("d_wind", _windTexture);
+            _Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
+            _Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
+            _Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
+            _Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
+
             _instanceShader.SetTexture("d_State0", _stateParticleTexture0);
             _Device.SetSamplerState(1, SamplerState.AddressU, TextureAddress.Clamp);
             _Device.SetSamplerState(1, SamplerState.AddressV, TextureAddress.Clamp);
@@ -348,11 +365,18 @@ namespace ConsoleApp1
             _Device.SetSamplerState(2, SamplerState.AddressV, TextureAddress.Clamp);
             _Device.SetSamplerState(2, SamplerState.MinFilter, TextureFilter.Point);
             _Device.SetSamplerState(2, SamplerState.MagFilter, TextureFilter.Point);
-            
+            _instanceShader.SetTexture("d_color_ramp", _particles.getColorRampTexture());
+            _Device.SetSamplerState(3, SamplerState.AddressU, TextureAddress.Clamp);
+            _Device.SetSamplerState(3, SamplerState.AddressV, TextureAddress.Clamp);
+            _Device.SetSamplerState(3, SamplerState.MinFilter, TextureFilter.Linear);
+            _Device.SetSamplerState(3, SamplerState.MagFilter, TextureFilter.Linear);
 
             _instanceShader.SetValue("d_particles_res", particleRes);
             _instanceShader.SetValue("d_resScreen", new float[] { _width, _height });
-            _instanceShader.SetValue("d_waves", _particles.IsWave);            
+            _instanceShader.SetValue("d_wind_min", new float[] { _windData.uMin, _windData.vMin });
+            _instanceShader.SetValue("d_wind_max", new float[] { _windData.uMax, _windData.vMax });
+            _instanceShader.SetValue("d_opacity_min", _particles.Opacity);
+            _instanceShader.SetValue("d_waves", _particles.IsWave);
 
             _Device.DrawIndexedPrimitive(PrimitiveType.TriangleList, 0, 0, vertsTotal, 0, 2 * numParticles);
             _instanceShader.EndPass();
@@ -422,8 +446,8 @@ namespace ConsoleApp1
             _stateParticleTexture0 = _stateParticleTexture1;
             _stateParticleTexture1 = _tempTexture;
         }
+        #endregion
 
-        
         #region initialize Variables
         private void InitTexturesScreen()
         {
@@ -443,7 +467,6 @@ namespace ConsoleApp1
 
         private void InitTexturesParticles()
         {
-            //_waveTexture = Texture.FromFile(_Device, "Img/wave2.png");
             try
             {
                 if (!_particles.Equals(null))
@@ -456,7 +479,6 @@ namespace ConsoleApp1
             {
                 throw new Exception(e.ToString());
             }
-
         }
 
 
@@ -464,6 +486,7 @@ namespace ConsoleApp1
         {
             _rendTexture = new RenderTextureClass(_Device, _width, _height);
             _earthTexture = Texture.FromFile(_Device, "Img/earth.jpg");
+            _earthWhite = Texture.FromFile(_Device, "Img/earth2.jpg");
             _earthNightTexture = Texture.FromFile(_Device, "Img/earth_night.jpg");
         }
 
@@ -472,13 +495,13 @@ namespace ConsoleApp1
             _particles = new Particle(_Device);           
         }
 
-
         private void InitializeShaders()
         {
             //Compiles from file
             _drawParticleShader = Util.compileEffectProgram(_Device, "Shaders/drawParticle.fx");
             _updateParticleShader = Util.compileEffectProgram(_Device, "Shaders/updateParticle.fx");
             _screenShader = Util.compileEffectProgram(_Device, "Shaders/screenFade.fx");
+            
             //New shaders replace drawParticle            
             _instanceShader =  Util.compileEffectProgram(_Device, "Shaders/drawQuadParticle.fx");
             
@@ -493,27 +516,7 @@ namespace ConsoleApp1
             _screenTexture = Util.createTexture(_Device, emptyPixels, width, height);
         }
 
-        void InitSlidesGui(UserControl myUserControl)
-        {
-            float fadeMin = 0.96f, fadeMax = 0.999f;
-            float dropRateMin = 0.0f, dropRateMax = 0.1f;
-            float speedMin = 0.05f, speedMax = 1.0f;
-            float dropRateBumpMin = 0, dropRateBumpMax = 0.2f;
-            _wavesBool = myUserControl.CheckBoxWave.Checked;
-            _pointBool = myUserControl.CheckBoxPoint.Checked;
 
-            myUserControl.FadeBar.Value = (int)(((_particles.FadeOpacity - fadeMin) * 100) / (fadeMax - fadeMin));
-            myUserControl.DropRateBar.Value = (int)(((_particles.DropRate - dropRateMin) * 1000) / (dropRateMax - dropRateMin));
-            myUserControl.DropRateBumpBar.Value = (int)(((_particles.DropRate - dropRateBumpMin) * 1000) / (dropRateBumpMax - dropRateBumpMin));
-            myUserControl.SpeedBar.Value = (int)(((_particles.SpeedFactor - speedMin) * 100) / (speedMax - speedMin));            
-            myUserControl.FadeBox.Text = _particles.FadeOpacity.ToString();
-            myUserControl.DropRateBox.Text = _particles.DropRate.ToString();
-            myUserControl.DropRateBumpBox.Text = _particles.DropRateBump.ToString();
-            myUserControl.SpeedBox.Text = _particles.SpeedFactor.ToString();
-            myUserControl.RegSpeedBox.Text = _particles.SpeedReg.ToString();
-
-        }
-#endregion
         private void ReadWindData(string PathName, string fileName)
         {
 
@@ -524,9 +527,9 @@ namespace ConsoleApp1
             }
             _windData.image = File.ReadAllBytes(Path.Combine(PathName, fileName + ".png"));
         }
-
+#endregion
         void updateValues(){
-            _pointBool = myUserControl.CheckBoxPoint.Checked;            
+            _pointBool = myUserView.CheckBoxPoint.Checked;            
         }
 
 
@@ -538,14 +541,16 @@ namespace ConsoleApp1
             _stateParticleTexture0.Dispose();
             _screenTexture.Dispose();
             _backGroundTexture.Dispose();
-
             _IndexBuffer.Dispose();
+            _earthWhite.Dispose();
+            _earthTexture.Dispose();
 
             //shader
             _drawParticleShader.Dispose();
             _updateParticleShader.Dispose();
             _screenShader.Dispose();
             _instanceShader.Dispose();
+
             //device
             _Device.Dispose();
             _RenderForm.Dispose();

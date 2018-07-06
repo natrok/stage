@@ -11,9 +11,9 @@ using System.Drawing.Drawing2D;
 
 namespace ConsoleApp1
 {
-    public partial class UserControl : System.Windows.Forms.UserControl
+    public partial class UserView : System.Windows.Forms.UserControl
     {
-        public UserControl()
+        public UserView()
         {
             InitializeComponent();
             fadeBar.Minimum = 0;
@@ -27,9 +27,16 @@ namespace ConsoleApp1
             regSpeedBar.Minimum = 0;
             regSpeedBar.Maximum = 100;
 
+            particlesBar.Minimum = 0;
+            particlesBar.Maximum = 10000;
+            opacityBar.Minimum = 0;
+            opacityBar.Maximum = 100;
+
             checkBoxPoint.Checked = false;
             checkBoxWave.Checked = false;
-            comboBoxColor.SelectedIndex = 0;
+            comboBoxColor.SelectedIndex = 3;
+
+        
 
         }
 
@@ -52,6 +59,28 @@ namespace ConsoleApp1
         {
             get { return speedBar; }
         }
+
+        public TextBox OpacityBox
+        {
+            get { return opacityBox; }
+        }
+
+        public TrackBar OpacityBar
+        {
+            get { return opacityBar; }
+        }
+
+        public TextBox ParticlesBox
+        {
+            get { return particlesBox; }
+        }
+
+        public TrackBar ParticleBar
+        {
+            get { return particlesBar; }
+        }
+
+
 
         public TextBox DropRateBox
         {
@@ -85,12 +114,6 @@ namespace ConsoleApp1
             get { return regSpeedBar; }
         }
 
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
         public CheckBox CheckBoxPoint
         {
             get { return checkBoxPoint; }
@@ -112,10 +135,15 @@ namespace ConsoleApp1
             this.regSpeedBar.Scroll += new System.EventHandler(obj.speedRegBar_Scroll);
             this.dropRateBar.Scroll += new System.EventHandler(obj.dropRate_Scroll);
             this.DropRateBumpBar.Scroll += new System.EventHandler(obj.dropRateBump_Scroll);
+            this.particlesBar.Scroll += new System.EventHandler(obj.particlesBar_Scroll);
+            this.opacityBar.Scroll += new System.EventHandler(obj.opacityBar_Scroll);
 
             this.checkBoxPoint.CheckedChanged += new System.EventHandler(obj.checkBoxPoint_CheckedChanged);
             this.checkBoxWave.CheckedChanged += new System.EventHandler(obj.checkBoxWave_CheckedChanged);
             this.comboBoxColor.SelectedIndexChanged += new System.EventHandler(obj.comboBoxColor_SelectedIndexChanged);
+
+            
+
         }
 
     }

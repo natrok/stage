@@ -166,7 +166,6 @@ float4 main_FG(VSOut IN): COLOR0
 
 		//if (angle < 90)
 			//angleinRadians = 180;
-
 		//if (angle < 0)
 			//angle += 90;
 
@@ -175,7 +174,7 @@ float4 main_FG(VSOut IN): COLOR0
 		ColorRes = tex2D(d_waveSampler, coord);		
 		//ColorRes = tex2D(d_waveSampler, IN.v_wave_pos);		
 	}
-	ColorRes = float4(1,0.5,0,1);
+	
 	return ColorRes;
 }
 

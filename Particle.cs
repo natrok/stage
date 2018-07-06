@@ -17,7 +17,9 @@ namespace ConsoleApp1
 
 
         List<Tuple<double, uint>> defaultRampColors;
-        private float fadeOpacity;
+        private float fade;
+        private float opacity;
+
         private float speedFactor;
         private float dropRate;
         private float dropRateBump;
@@ -45,24 +47,26 @@ namespace ConsoleApp1
             /*Default Values*/
             defaultRampColors = new List<Tuple<double, uint>>()
             {
-            new Tuple<double, uint>(0.0, 0xff3288bd),
-            new Tuple<double, uint>(0.1, 0xff66c2a5),
-            new Tuple<double, uint>(0.2, 0xffabdda4),
-            new Tuple<double, uint>(0.3, 0xffe6f598),
-            new Tuple<double, uint>(0.4, 0xfffee08b),
-            new Tuple<double, uint>(0.5, 0xfffdae61),
-            new Tuple<double, uint>(0.6, 0xfff46d43),
-            new Tuple<double, uint>(1.0, 0xffd53e4f)
+            new Tuple<double, uint>(0.0, 0xff7f7f7f),
+            new Tuple<double, uint>(0.1, 0xff7f7f7f),
+            new Tuple<double, uint>(0.2, 0xff7f7f7f),
+            new Tuple<double, uint>(0.3, 0xff7f7f7f),
+            new Tuple<double, uint>(0.4, 0xff7f7f7f),
+            new Tuple<double, uint>(0.5, 0xff7f7f7f),
+            new Tuple<double, uint>(0.6, 0xff7f7f7f),
+            new Tuple<double, uint>(1.0, 0xff7f7f7f)
             };
             /*Default Values*/
-            fadeOpacity = 0.99f; // how fast the particle trails fade on each frame
-            speedFactor = 0.1f; // how fast the particles move
+            fade = 0.97f; // how fast the particle trails fade on each frame
+            speedFactor = 0.3f; // how fast the particles move
 
             dropRate = 0.006f; // how often the particles move to a random place
             dropRateBump = 0.006f; // drop rate increase relative to individual particle
             speedReg = 0.2f;
 
-            numParticles = 6400;
+            opacity = 0.1f;
+
+            numParticles = 20000;
             setnumParticles(numParticles);
             setColorRamp(defaultRampColors);
             isWave = false;
@@ -71,13 +75,14 @@ namespace ConsoleApp1
 
 
         public Particle(Device _Device, List<Tuple<double, uint>> defaultRampColors, 
-           float fadeOpacity, float speedFactor, float dropRate, float dropRateBump, int numParticles, float life, bool isWave)
+           float fade, float opacity, float speedFactor, float dropRate, float dropRateBump, int numParticles, float life, bool isWave)
         {
             this._Device = _Device;
 
             /*Default Values*/
             this.defaultRampColors = defaultRampColors;
-            this.fadeOpacity = fadeOpacity; // how fast the particle trails fade on each frame
+            this.fade = fade; // how fast the particle trails fade on each frame
+            this.opacity = opacity; 
             this.speedFactor = speedFactor; // how fast the particles move
             this.dropRate = dropRate; // how often the particles move to a random place
             this.dropRateBump = 0.01f; // drop rate increase relative to individual particle
@@ -85,8 +90,7 @@ namespace ConsoleApp1
             this.numParticles = numParticles;
             setnumParticles(numParticles);
 
-            setColorRamp( defaultRampColors);
-            this.isWave = isWave;
+             this.isWave = isWave;
 
         }
 
@@ -97,12 +101,6 @@ namespace ConsoleApp1
             colorRampTexture = Util.createTexture(_Device, createColorRamp(colors), 16, 16);
         }
 
-        public List<Tuple<double, uint>> getColorRamp()
-        {
-
-            return defaultRampColors;
-            //colorRampTexture = Util.createTexture(_Device, getColorRamp(colors), 16, 16);
-        }
 
         public Texture getColorRampTexture() {
             return colorRampTexture;
@@ -167,13 +165,14 @@ namespace ConsoleApp1
             // textures to hold the particle state for the current and the next frame
             particleStateTexture0 = Util.createTexture(_Device, particleState, particleRes, particleRes);
             particleStateTexture1 = Util.createTexture(_Device, particleState, particleRes, particleRes);
-
-
+            
             float[] particleIndices = new float[numParticles];
             for (int i = 0; i < numParticles; i++)
                 particleIndices[i] = i;
             //set new number of particles
             this.numParticles = numParticles;
+
+            // Use in first draw shader
             particleIndexBuffer = Util.createBuffer(_Device, particleIndices);
         }
 
@@ -203,10 +202,16 @@ namespace ConsoleApp1
             return particleIndexBuffer;
         }
 
-        public float FadeOpacity
+        public float Fade
         {
-            get { return fadeOpacity; }
-            set { this.fadeOpacity = value; }
+            get { return fade; }
+            set { this.fade = value; }
+        }
+
+        public float Opacity
+        {
+            get { return opacity; }
+            set { this.opacity = value; }
         }
 
         public float SpeedFactor
@@ -240,7 +245,6 @@ namespace ConsoleApp1
             set { this.isWave = value; }
         }
 
-        /*a tester*/
         public void updateNumParticles(int numParticles) {
             setnumParticles(numParticles);
         }
