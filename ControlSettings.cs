@@ -16,10 +16,7 @@ namespace ConsoleApp1
 
 
         private float fadeMin = 0.96f, fadeMax = 0.999f;
-        private float dropRateMin = 0.0f, dropRateMax = 0.1f;
         private float speedMin = 0.05f, speedMax = 1.0f;
-        private float dropRateBumpMin = 0, dropRateBumpMax = 0.2f;
-        private float regSpeedMin = 0.01f, regSpeedMax = 1.0f;
         private float opacityMin = 0.1f, opacityMax = 1.0f;
         private int particleMin = 1000, particleMax = 100000;
 
@@ -47,26 +44,6 @@ namespace ConsoleApp1
             float value = (float)(speedMax * UV.SpeedBar.Value) / UV.SpeedBar.Maximum;
             myParticle.SpeedFactor = value;
             UV.SpeedBox.Text = myParticle.SpeedFactor.ToString();
-        }
-
-        public void speedRegBar_Scroll(object sender, EventArgs e)
-        {
-            float value = (float)(regSpeedMax * UV.RegSpeedBar.Value) / UV.RegSpeedBar.Maximum;
-            myParticle.SpeedReg = value;
-            UV.RegSpeedBox.Text = myParticle.SpeedReg.ToString();
-        }
-        public void dropRate_Scroll(object sender, EventArgs e)
-        {
-            float dropRate = (float)(dropRateMax * UV.DropRateBar.Value) / UV.DropRateBar.Maximum;
-            myParticle.DropRate = dropRate;
-            UV.DropRateBox.Text = myParticle.DropRate.ToString();
-        }
-
-        public void dropRateBump_Scroll(object sender, EventArgs e)
-        {
-            float value = (float)(dropRateBumpMax * UV.DropRateBumpBar.Value) / UV.DropRateBumpBar.Maximum;
-            myParticle.DropRateBump = value;
-            UV.DropRateBumpBox.Text = myParticle.DropRateBump.ToString();
         }
 
         public void checkBoxPoint_CheckedChanged(object sender, EventArgs e)
@@ -107,14 +84,14 @@ namespace ConsoleApp1
 
             hotRampColors = new List<Tuple<double, uint>>()
             {
-            new Tuple<double, uint>(0.0, 0xffffffd9),
-            new Tuple<double, uint>(0.1, 0xffedf8b1),
-            new Tuple<double, uint>(0.2, 0xffc7e9b4),
-            new Tuple<double, uint>(0.3, 0xff7fcdbb),
-            new Tuple<double, uint>(0.4, 0xff41b6c4),
-            new Tuple<double, uint>(0.5, 0xff1d91c0),
-            new Tuple<double, uint>(0.6, 0xff225ea8),
-            new Tuple<double, uint>(1.0, 0xff0c2c84)
+            new Tuple<double, uint>(0.0, 0x0021fc),
+            new Tuple<double, uint>(0.1, 0x008cd4),
+            new Tuple<double, uint>(0.2, 0x00d985),
+            new Tuple<double, uint>(0.3, 0x00fe01),
+            new Tuple<double, uint>(0.4, 0x74e200),
+            new Tuple<double, uint>(0.6, 0xd88600),
+            new Tuple<double, uint>(0.8, 0xfe1100),
+            new Tuple<double, uint>(1.0, 0xd60089)
             };
 
             gris = new List<Tuple<double, uint>>()
@@ -178,18 +155,15 @@ namespace ConsoleApp1
             UV.ParticleBar.Value = (int)(((myParticle.getnumParticles() - particleMin) * UV.ParticleBar.Maximum) / (particleMax - particleMin));
             UV.FadeBar.Value = (int)(((myParticle.Fade - fadeMin) * UV.FadeBar.Maximum) / (fadeMax - fadeMin));
             UV.OpacityBar.Value = (int)(((myParticle.Opacity - opacityMin) * UV.OpacityBar.Maximum) / (opacityMax - opacityMin));
-            UV.DropRateBar.Value = (int)(((myParticle.DropRate - dropRateMin) * UV.DropRateBar.Maximum) / (dropRateMax - dropRateMin));
-            UV.DropRateBumpBar.Value = (int)(((myParticle.DropRate - dropRateBumpMin) * UV.DropRateBumpBar.Maximum) / (dropRateBumpMax - dropRateBumpMin));
+
             UV.SpeedBar.Value = (int)(((myParticle.SpeedFactor - speedMin) * UV.SpeedBar.Maximum) / (speedMax - speedMin));
 
             //Box
             UV.ParticlesBox.Text = myParticle.getnumParticles().ToString();
             UV.FadeBox.Text = myParticle.Fade.ToString();
             UV.OpacityBox.Text = myParticle.Opacity.ToString();
-            UV.DropRateBox.Text = myParticle.DropRate.ToString();
-            UV.DropRateBumpBox.Text = myParticle.DropRateBump.ToString();
             UV.SpeedBox.Text = myParticle.SpeedFactor.ToString();
-            UV.RegSpeedBox.Text = myParticle.SpeedReg.ToString();
+
         }
 
         public bool IsChangedParticle

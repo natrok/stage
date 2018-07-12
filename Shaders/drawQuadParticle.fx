@@ -114,13 +114,17 @@ float4 main_FG(VSOut In): COLOR0
 		floor(16.0 * speed) / 16.0 //Y
 		);
 	ColorRes = tex2D(d_color_rampSampler, ramp_pos);
-	ColorRes = float4(1.0, 1.0, 1.0, 1.0);
 
-	float opacity = d_opacity_min + (speed * (1.0 - d_opacity_min)) / 1.0f;
+	//float opacity = d_opacity_min  + (speed * (1.0 - d_opacity_min));
+
+	float opacity = 1.0 - (1.0 - speed)*( 1.0 - d_opacity_min);
+
 	float fade = In.fade;
 	float4 res = float4(ColorRes.xyz, 1.0);
+	
 	float4 color = res * opacity;
 	color = float4(color.xyz, fade);	
+	
 	//fade so doucement
 	//float4 aa = float4(fade, fade, fade, fade);
 	//aa = float4(floor(255.0 * aa * fade) / 255.0);

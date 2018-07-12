@@ -1,10 +1,6 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using SharpDX;
 using SharpDX.Direct3D9;
 
@@ -14,38 +10,27 @@ namespace ConsoleApp1
 {
     public class Particle
     {
-
-
-        List<Tuple<double, uint>> defaultRampColors;
-        private float fade;
-        private float opacity;
-
-        private float speedFactor;
-        private float dropRate;
-        private float dropRateBump;
-        private float speedReg;
-
-        private bool isWave;
+        private int numParticles;
+        private float _Fade;
+        private float _Opacity;
+        private float _SpeedFactor;
+        private bool _IsWave;
+        private int particleStateResolution;
 
         private Texture colorRampTexture;
         private Texture particleStateTexture0;
         private Texture particleStateTexture1;
-
+        List<Tuple<double, uint>> defaultGrisColors;
 
         private Device _Device;
 
-        private int particleStateResolution;
-        private int numParticles;
-
-        
-        VertexBuffer particleIndexBuffer;
 
         public Particle(Device _Device) {
 
             this._Device = _Device;
 
             /*Default Values*/
-            defaultRampColors = new List<Tuple<double, uint>>()
+            defaultGrisColors = new List<Tuple<double, uint>>()
             {
             new Tuple<double, uint>(0.0, 0xff7f7f7f),
             new Tuple<double, uint>(0.1, 0xff7f7f7f),
@@ -57,40 +42,31 @@ namespace ConsoleApp1
             new Tuple<double, uint>(1.0, 0xff7f7f7f)
             };
             /*Default Values*/
-            fade = 0.97f; // how fast the particle trails fade on each frame
-            speedFactor = 0.3f; // how fast the particles move
+            _Fade = 0.98f; // how fast the particle trails fade on each frame
+            _SpeedFactor = 0.3f; // how fast the particles move
 
-            dropRate = 0.006f; // how often the particles move to a random place
-            dropRateBump = 0.006f; // drop rate increase relative to individual particle
-            speedReg = 0.2f;
-
-            opacity = 0.1f;
-
-            numParticles = 20000;
+            _Opacity = 0.35f;
+            numParticles = 12000;
             setnumParticles(numParticles);
-            setColorRamp(defaultRampColors);
-            isWave = false;
+            setColorRamp(defaultGrisColors);
+            _IsWave = false;
 
         }
 
 
         public Particle(Device _Device, List<Tuple<double, uint>> defaultRampColors, 
-           float fade, float opacity, float speedFactor, float dropRate, float dropRateBump, int numParticles, float life, bool isWave)
+           float fade, float opacity, float speedFactor,int numParticles, float life, bool isWave)
         {
             this._Device = _Device;
 
             /*Default Values*/
-            this.defaultRampColors = defaultRampColors;
-            this.fade = fade; // how fast the particle trails fade on each frame
-            this.opacity = opacity; 
-            this.speedFactor = speedFactor; // how fast the particles move
-            this.dropRate = dropRate; // how often the particles move to a random place
-            this.dropRateBump = 0.01f; // drop rate increase relative to individual particle
-
+            this.defaultGrisColors = defaultRampColors;
+            this._Fade = fade; // how fast the particle trails fade on each frame
+            this._Opacity = opacity;// how difference contraste there is between the faster and slower particle
+            this._SpeedFactor = speedFactor; // how fast the particles move
+            this._IsWave = isWave;
             this.numParticles = numParticles;
             setnumParticles(numParticles);
-
-             this.isWave = isWave;
 
         }
 
@@ -108,7 +84,7 @@ namespace ConsoleApp1
 
         byte[] createColorRamp(List<Tuple<double, uint>> colors)
         {
-            int width = 256; //16*16
+            int width = 256; 
             int height = 1;
 
             byte[] res = new byte[width * height * 4];
@@ -164,16 +140,9 @@ namespace ConsoleApp1
 
             // textures to hold the particle state for the current and the next frame
             particleStateTexture0 = Util.createTexture(_Device, particleState, particleRes, particleRes);
-            particleStateTexture1 = Util.createTexture(_Device, particleState, particleRes, particleRes);
-            
-            float[] particleIndices = new float[numParticles];
-            for (int i = 0; i < numParticles; i++)
-                particleIndices[i] = i;
-            //set new number of particles
-            this.numParticles = numParticles;
+            particleStateTexture1 = Util.createTexture(_Device, particleState, particleRes, particleRes);        
 
-            // Use in first draw shader
-            particleIndexBuffer = Util.createBuffer(_Device, particleIndices);
+            this.numParticles = numParticles;
         }
 
         public int getnumParticles()
@@ -196,53 +165,28 @@ namespace ConsoleApp1
             return particleStateTexture1;
         }
 
-
-        public VertexBuffer getIndexBuffer()
-        {
-            return particleIndexBuffer;
-        }
-
         public float Fade
         {
-            get { return fade; }
-            set { this.fade = value; }
+            get { return _Fade; }
+            set { _Fade = value; }
         }
 
         public float Opacity
         {
-            get { return opacity; }
-            set { this.opacity = value; }
+            get { return _Opacity; }
+            set { _Opacity = value; }
         }
 
         public float SpeedFactor
         {
-            get { return speedFactor; }
-            set { this.speedFactor = value; }
+            get { return _SpeedFactor; }
+            set { _SpeedFactor = value; }
         }
-
-        public float DropRate
-        {
-            get { return dropRate; }
-            set { this.dropRate = value; }
-        }
-
-        public float DropRateBump
-        {
-            get { return dropRateBump; }
-            set { this.dropRateBump = value; }
-        }
-
-        public float SpeedReg
-        {
-            get { return speedReg; }
-            set { this.speedReg = value; }
-        }
-
 
         public bool IsWave
         {
-            get { return isWave; }
-            set { this.isWave = value; }
+            get { return _IsWave; }
+            set { _IsWave = value; }
         }
 
         public void updateNumParticles(int numParticles) {

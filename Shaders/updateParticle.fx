@@ -14,13 +14,9 @@ float2 d_wind_max;
 
 float d_rand_seed;
 float d_speed_factor;
-float d_drop_rate;
-float d_drop_rate_bump;
-float d_speed_reg;
 
 float d_miPixX;
 float d_miPixY;
-
 
 //SAMPLERS FOR TEXTURE
 sampler d_windSampler : register(s0) =
@@ -84,15 +80,14 @@ VSOut MainVS(float2 a_pos : POSITION)
 {
 	VSOut output;
 	output.v_particle_pos = float2((1.0 - a_pos.x) - d_miPixX,a_pos.y - d_miPixY);	
-	float4 myPosition = float4(1.0 - 2.0 * a_pos, 0, 1);
-	output.position = myPosition;
+	output.position = float4(1.0 - 2.0 * a_pos, 0, 1);
 	return output;
 }
 
 //------------------------------
 //-----||FRAGMENT SHADER||------
 //------------------------------
-float4 MainPS(VSOut In , uniform bool isRandomReset) : COLOR0
+float4 MainPS(VSOut In , uniform bool isWave) : COLOR0
 {
 	float4 color = tex2D(d_particlesSampler, In.v_particle_pos);
 	float2 pos = float2(
@@ -109,30 +104,24 @@ float4 MainPS(VSOut In , uniform bool isRandomReset) : COLOR0
 	float2 vent = lookup_wind(pos);
 	float2 velocity = lerp(d_wind_min, d_wind_max, vent);
 
-	float speed_u = d_speed_reg;
-
+	if (isWave)
+		velocity = lerp(d_wind_min / 4.0, d_wind_max / 4.0f, vent);
 	// update particle position, wrapping around the date line
 	updatePosition(pos, velocity);	
 	
-	// a random seed to use for the particle drop
+	// a random seed to use for the particle drop, it gives you a random Position of screen coordinates
 	float2 seed = (pos + In.v_particle_pos) * d_rand_seed; /*Important*/
 	float2 random_pos = float2(
 		rand(seed + 1.3),
 		rand(seed + 2.1));
 
-	// drop rate is a chance a particle will restart at random position, to avoid degeneration
-	float drop_rate = d_drop_rate + speed_u * d_drop_rate_bump;	
-	
-	float drop = step(1.0 - drop_rate, rand(seed)); //compare two values	
-	//reinitialize automatique every x time
-	if(!isRandomReset)
-		drop = resetParticle;
-	
+	float drop = resetParticle;
 	pos = lerp(pos, random_pos, drop);
 	// encode the new particle position back into RGBA
 	float4 res = float4(
 		frac(pos * 255.0),
 		floor(pos * 255.0) / 255.0);
+	
 	return res;
 }
 
@@ -146,11 +135,11 @@ technique Default
 	}
 }
 
-technique RandomReset
+technique Wave
 {
 	pass P0
 	{
 		VertexShader = compile vs_3_0 MainVS();
-		PixelShader = compile ps_3_0 MainPS(true);
+		PixelShader = compile ps_3_0 MainPS( true);
 	}
 }

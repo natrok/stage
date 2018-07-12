@@ -28,13 +28,6 @@ namespace ConsoleApp1
             device.VertexFormat = VertexFormat.Position;
             device.SetStreamSource(0, quadBuffer, 0, 12);
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
-            
-            /*
-            VertexBuffer quadBuffer = Util.createBuffer(device, new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
-            device.VertexFormat = VertexFormat.Position;
-            device.SetStreamSource(0, quadBuffer, 0, 8);
-            device.DrawPrimitives(PrimitiveType.TriangleFan, 0, 4);
-            */
         }
 
         public static void drawBackgroundTextureFromSprite(Device device, Texture offscreen1, Texture offscreen2)

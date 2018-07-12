@@ -1,4 +1,4 @@
-﻿using MySharpDXGame;
+﻿//using MySharpDXGame;
 using Newtonsoft.Json;
 
 //Sharpdx
@@ -20,24 +20,12 @@ namespace ConsoleApp1
     {
         private RenderForm _RenderForm;
 
-        struct VertexPositionColor
-        {
-            public readonly Vector3 Position;
-            public readonly int Color;
-            public VertexPositionColor(Vector3 position, int color)
-            {
-                Position = position;
-                Color = color;               
-            }
-        }
-
         private int _width = Screen.PrimaryScreen.Bounds.Width;// 1620;
         private int _height = Screen.PrimaryScreen.Bounds.Height;  //1080;
         private int dx = 0, min_range,max_range;
-        private float[] d = { 0.2f, 0.6f, 1.0f, 1.0f, 1.0f, 1.0f, 0.6f, 0.2f };
-
+        
+        //Fade transition of particle
         private float[] f = { 0.3f, 0.5f, 0.8f, 1.0f, 1.0f, 0.8f, 0.5f, 0.1f };
-
         private float[] t = { 0.1f, 0.5f, 0.75f, 1.0f, 1.0f, 1.0f, 1.0f, 0.75f, 0.5f, 0.2f };
 
         
@@ -45,33 +33,29 @@ namespace ConsoleApp1
         private Particle _particles;
         private WindData _windData;
 
-        //RenderToTexture
-        private RenderTextureClass _rendTexture;
-
         //Creates Devices
         private Device _Device;
 
         //shaders
-        private Effect _drawParticleShader, _updateParticleShader, _screenShader;
-        private Effect _instanceShader ;        
+        private Effect _instanceShader, _updateParticleShader, _screenShader;
+ 
 
         //textures
         private Texture _tempTexture;
         private Texture _backGroundTexture, _screenTexture;
         private Texture _stateParticleTexture0, _stateParticleTexture1;
 
-        private Texture _windTexture, _waveTexture;
+        private Texture _windTexture;
         private Texture _earthTexture, _earthWhite, _earthNightTexture;
         
         private int canvasWidth;
-        private int canvasHeight;
-        
+        private int canvasHeight;       
 
         
         private IndexBuffer _IndexBuffer;
         private VertexBuffer _quadVertexBuffer;
 
-        bool _wavesBool, _pointBool;
+        bool _pointBool;
 
       
         /*View*/
@@ -85,7 +69,7 @@ namespace ConsoleApp1
 
         public Game()
         {
-            //VISTA
+            //View
             //Render form
             _RenderForm = new RenderForm("My first SharpDX app");
             _RenderForm.ClientSize = new System.Drawing.Size(_width, _height);
@@ -107,20 +91,18 @@ namespace ConsoleApp1
             _Device = new Device(new Direct3D(), 0, DeviceType.Hardware, _RenderForm.Handle, CreateFlags.HardwareVertexProcessing, p);
 
             //Read WindData
-            string fileName = "2016112200";
-            //string fileName = "2018070200";
+            string fileName = "2016112100";            
             string PathName = "Wind";
             ReadWindData(PathName, fileName);
             InitWindTexture();            
 
             //Initialize Objets
-            //MODELO
+            //Model
             InitializeRenderTexture();
             InitTexturesScreen();
             InitializeParticle();
             InitTexturesParticles();
-            InitializeShaders();                        
-            
+            InitializeShaders();  
 
             //CONTROL
             controller = new ControlSettings(myUserView,_particles);
@@ -153,7 +135,6 @@ namespace ConsoleApp1
                 controller.IsChangedParticle = false;
             }
 
-
             updateValues();
             Draw();
             updateParticles();         
@@ -165,9 +146,7 @@ namespace ConsoleApp1
             Surface surface = _screenTexture.GetSurfaceLevel(0);
             rts.BeginScene(surface, new SharpDX.Viewport(0, 0, _width, _height, 0, 1));
             drawTexture(_backGroundTexture, _particles.Fade);
-
             instanceParticles();  
-
             rts.EndScene(Filter.None);
             surface.Dispose();
             rts.Dispose();
@@ -175,12 +154,12 @@ namespace ConsoleApp1
             //draw screenTexture in screen 
             _Device.Viewport = new SharpDX.Viewport(0, 0, canvasWidth, canvasHeight, 0, 1);
             _Device.BeginScene();
-            _Device.Clear(ClearFlags.Target, new SharpDX.ColorBGRA(0.0f, 0.0f, 0.0f, 1.0f), 0.0f, 1);            
+            _Device.Clear(ClearFlags.Target, new SharpDX.ColorBGRA(0.0f, 0.0f,0.0f, 1.0f), 0.0f, 1);            
             _Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-            _Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha); //SourceColor SourceAlpha
-            _Device.SetRenderState(RenderState.DestinationBlend, Blend.DestinationAlpha); //InverseSourceColor DestinationAlpha 
+            _Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha); //SourceColor SourceAlpha SourceAlpha
+            _Device.SetRenderState(RenderState.DestinationBlend, Blend.DestinationColor); //DestinationAlpha SourceColor  DestinationColor
 
-            if(_pointBool)
+            if (_pointBool)
                 drawTexture(_earthTexture, 1.0f);
             else
                 drawTexture(_earthWhite, 1.0f);
@@ -193,55 +172,6 @@ namespace ConsoleApp1
             Texture temp = _backGroundTexture;
             _backGroundTexture = _screenTexture;
             _screenTexture = temp;
-        }
-
-
-        public void drawParticles()
-        {
-            _Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-            _Device.SetRenderState(RenderState.SourceBlend, Blend.SourceColor);
-            _Device.SetRenderState(RenderState.DestinationBlend, Blend.DestinationAlpha);
-            VertexBuffer indexBuffer = _particles.getIndexBuffer();
-            int numParticles = _particles.getnumParticles();
-            _Device.SetRenderState(RenderState.PointSpriteEnable, _wavesBool);
-
-            /*set textures*/
-            _drawParticleShader.SetTexture("d_wind", _windTexture);
-            _Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
-            _Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
-            _Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
-            _Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
-            _drawParticleShader.SetTexture("d_wave", _waveTexture);
-            _Device.SetSamplerState(0, SamplerState.AddressU, TextureAddress.Clamp);
-            _Device.SetSamplerState(0, SamplerState.AddressV, TextureAddress.Clamp);
-            _Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
-            _Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
-            _drawParticleShader.SetTexture("d_particles", _stateParticleTexture0);
-            _Device.SetSamplerState(1, SamplerState.AddressU, TextureAddress.Clamp);
-            _Device.SetSamplerState(1, SamplerState.AddressV, TextureAddress.Clamp);
-            _Device.SetSamplerState(1, SamplerState.MinFilter, TextureFilter.Point);
-            _Device.SetSamplerState(1, SamplerState.MagFilter, TextureFilter.Point);
-            _drawParticleShader.SetTexture("d_color_ramp", _particles.getColorRampTexture());
-            _Device.SetSamplerState(2, SamplerState.AddressU, TextureAddress.Clamp);
-            _Device.SetSamplerState(2, SamplerState.AddressV, TextureAddress.Clamp);
-            _Device.SetSamplerState(2, SamplerState.MinFilter, TextureFilter.Linear);
-            _Device.SetSamplerState(2, SamplerState.MagFilter, TextureFilter.Linear);
-
-            /*Set values*/
-            _drawParticleShader.SetValue("d_particles_resolution", _particles.getParticleStateResolution());
-            _drawParticleShader.SetValue("d_wind_min", new float[] { _windData.uMin, _windData.vMin });
-            _drawParticleShader.SetValue("d_wind_max", new float[] { _windData.uMax, _windData.vMax });
-            _drawParticleShader.SetValue("d_speed_factor", _particles.SpeedFactor);
-            _drawParticleShader.SetValue("d_PointSpriteEnable", false);
-
-            _drawParticleShader.Begin();
-            _drawParticleShader.BeginPass(0);
-            _Device.VertexFormat = VertexFormat.Position;
-            _Device.SetStreamSource(0, indexBuffer, 0, 4);
-            _Device.DrawPrimitives(PrimitiveType.PointList, 0, numParticles);
-            _drawParticleShader.EndPass();
-            _drawParticleShader.End();
-
         }
 
         #region Draw Particles
@@ -274,8 +204,7 @@ namespace ConsoleApp1
 
             float[]f = t;
             
-            _instanceShader.Begin();
-            _instanceShader.BeginPass(0);
+
 
             int numParticles = _particles.getnumParticles(); // => particleRes * particleRes
             int particleRes = _particles.getParticleStateResolution();
@@ -313,9 +242,9 @@ namespace ConsoleApp1
             float fadeValue;
             int value = 0, ind =0;
 
-            //// time for update fade value for each particle il faut que sois toujours le meme
+            //// time for update fade value for each particle plus large plus dure les block of particle
             float time = ft.ElapsedMilliseconds;
-            if (time > 500f)
+            if (time > 300f)
             {
                 ft.Restart();
                 dx = (dx + 1 > f.Length - 1) ? 0 : dx += 1;
@@ -347,6 +276,9 @@ namespace ConsoleApp1
             _quadVertexBuffer.Unlock();
             _Device.VertexFormat = VertexFormat.PositionW;
             _Device.SetStreamSource(0, _quadVertexBuffer, 0, Utilities.SizeOf<Vector4>());
+
+                        _instanceShader.Begin();
+            _instanceShader.BeginPass(0);
 
             //Set shaders Values. 
             _instanceShader.SetTexture("d_wind", _windTexture);
@@ -419,15 +351,12 @@ namespace ConsoleApp1
 
             //parametros Menu
             _updateParticleShader.SetValue("d_speed_factor", _particles.SpeedFactor);
-            _updateParticleShader.SetValue("d_drop_rate", _particles.DropRate);
-            _updateParticleShader.SetValue("d_drop_rate_bump", _particles.DropRateBump);
-            _updateParticleShader.SetValue("d_speed_reg", _particles.SpeedReg);
             //correction texture inverse
             _updateParticleShader.SetValue("d_miPixX", -0.5f / _stateParticleTexture0.GetLevelDescription(0).Width);
             _updateParticleShader.SetValue("d_miPixY", -0.5f / _stateParticleTexture0.GetLevelDescription(0).Height);
 
-            if (_pointBool)
-                _updateParticleShader.Technique = "RandomReset";
+            if (_particles.IsWave)
+                _updateParticleShader.Technique = "Wave";
             else
                 _updateParticleShader.Technique = "Default";
 
@@ -484,9 +413,9 @@ namespace ConsoleApp1
 
         private void InitializeRenderTexture()
         {
-            _rendTexture = new RenderTextureClass(_Device, _width, _height);
+
             _earthTexture = Texture.FromFile(_Device, "Img/earth.jpg");
-            _earthWhite = Texture.FromFile(_Device, "Img/earth2.jpg");
+            _earthWhite = Texture.FromFile(_Device, "Img/earth_white.jpg");
             _earthNightTexture = Texture.FromFile(_Device, "Img/earth_night.jpg");
         }
 
@@ -497,12 +426,10 @@ namespace ConsoleApp1
 
         private void InitializeShaders()
         {
-            //Compiles from file
-            _drawParticleShader = Util.compileEffectProgram(_Device, "Shaders/drawParticle.fx");
+            
             _updateParticleShader = Util.compileEffectProgram(_Device, "Shaders/updateParticle.fx");
             _screenShader = Util.compileEffectProgram(_Device, "Shaders/screenFade.fx");
-            
-            //New shaders replace drawParticle            
+            //shader replace drawParticle            
             _instanceShader =  Util.compileEffectProgram(_Device, "Shaders/drawQuadParticle.fx");
             
         }
@@ -546,7 +473,6 @@ namespace ConsoleApp1
             _earthTexture.Dispose();
 
             //shader
-            _drawParticleShader.Dispose();
             _updateParticleShader.Dispose();
             _screenShader.Dispose();
             _instanceShader.Dispose();
