@@ -30,6 +30,10 @@ sampler_state
 {
 	Texture = <d_particles>;
 };
+
+//Fix shader
+int d_ParticulesByBlock;
+int d_delta;
 //----------------------------
 //-----||VERTEX METHODS||-----
 //----------------------------
@@ -41,8 +45,7 @@ struct VSOut
 
 void updatePosition(inout float2 pos, inout float2 velocity) {
 	// update particle position
-	float distortion = cos(radians(pos.y * 180.0 - 90.0));
-	float2 offset = float2(velocity.x / distortion, -velocity.y) * 0.0001 * d_speed_factor;//changement
+	float2 offset = float2(velocity.x, -velocity.y) * 0.0001 * d_speed_factor;//changement
 	pos = frac(1.0 + pos + offset); 
 }
 
@@ -67,9 +70,9 @@ float2 lookup_wind(float2 uv)
 	return lerp(lerp(tl, tr, f.x), lerp(bl, br, f.x), f.y);
 }
 
-bool TestRange (int numberToCheck, int bottom, int top)
+bool TestRange(int numberToCheck, int bottom, int top)
 {
-  return (numberToCheck >= bottom && numberToCheck < top);
+	return (numberToCheck >= bottom && numberToCheck < top);
 }
 
 
@@ -79,7 +82,7 @@ bool TestRange (int numberToCheck, int bottom, int top)
 VSOut MainVS(float2 a_pos : POSITION)
 {
 	VSOut output;
-	output.v_particle_pos = float2((1.0 - a_pos.x) - d_miPixX,a_pos.y - d_miPixY);	
+	output.v_particle_pos = float2((1.0 - a_pos.x) - d_miPixX, a_pos.y - d_miPixY);	
 	output.position = float4(1.0 - 2.0 * a_pos, 0, 1);
 	return output;
 }
@@ -95,17 +98,18 @@ float4 MainPS(VSOut In , uniform bool isWave) : COLOR0
 		color.g / 255.0 + color.a); // decode particle position from pixel RGBA
 	
 	float2 px = 1.0 / d_particles_res;
-	float2 vc = (floor(In.v_particle_pos * d_particles_res)) * px;	
-	int index = vc.y * d_particles_res * d_particles_res + vc.x * d_particles_res;
+	float2 vc = (floor(In.v_particle_pos * d_particles_res)) * px;		
 	
-	//get particle to reset for your index
+	int index = (1.0 - vc.y) * d_particles_res * d_particles_res + vc.x * d_particles_res;
 	bool resetParticle = TestRange(index, d_particles_min, d_particles_max);
+	
 	
 	float2 vent = lookup_wind(pos);
 	float2 velocity = lerp(d_wind_min, d_wind_max, vent);
 
 	if (isWave)
 		velocity = lerp(d_wind_min / 4.0, d_wind_max / 4.0f, vent);
+	
 	// update particle position, wrapping around the date line
 	updatePosition(pos, velocity);	
 	
@@ -115,8 +119,7 @@ float4 MainPS(VSOut In , uniform bool isWave) : COLOR0
 		rand(seed + 1.3),
 		rand(seed + 2.1));
 
-	float drop = resetParticle;
-	pos = lerp(pos, random_pos, drop);
+	pos = lerp( pos , random_pos, resetParticle);
 	// encode the new particle position back into RGBA
 	float4 res = float4(
 		frac(pos * 255.0),

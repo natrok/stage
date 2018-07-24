@@ -12,7 +12,7 @@ namespace ConsoleApp1
     {
         private int numParticles;
         private float _Fade;
-        private float _Opacity;
+        private float _Contraste;
         private float _SpeedFactor;
         private bool _IsWave;
         private int particleStateResolution;
@@ -25,7 +25,8 @@ namespace ConsoleApp1
         private Device _Device;
 
 
-        public Particle(Device _Device) {
+        public Particle(Device _Device)
+        {
 
             this._Device = _Device;
 
@@ -43,10 +44,10 @@ namespace ConsoleApp1
             };
             /*Default Values*/
             _Fade = 0.98f; // how fast the particle trails fade on each frame
-            _SpeedFactor = 0.3f; // how fast the particles move
+            _SpeedFactor = 0.5f; // how fast the particles move
 
-            _Opacity = 0.35f;
-            numParticles = 12000;
+            _Contraste = 0.55f;
+            numParticles = 8100;
             setnumParticles(numParticles);
             setColorRamp(defaultGrisColors);
             _IsWave = false;
@@ -54,15 +55,15 @@ namespace ConsoleApp1
         }
 
 
-        public Particle(Device _Device, List<Tuple<double, uint>> defaultRampColors, 
-           float fade, float opacity, float speedFactor,int numParticles, float life, bool isWave)
+        public Particle(Device _Device, List<Tuple<double, uint>> defaultRampColors,
+           float fade, float opacity, float speedFactor, int numParticles, float life, bool isWave)
         {
             this._Device = _Device;
 
             /*Default Values*/
             this.defaultGrisColors = defaultRampColors;
             this._Fade = fade; // how fast the particle trails fade on each frame
-            this._Opacity = opacity;// how difference contraste there is between the faster and slower particle
+            this._Contraste = opacity;// how difference contraste there is between the faster and slower particle
             this._SpeedFactor = speedFactor; // how fast the particles move
             this._IsWave = isWave;
             this.numParticles = numParticles;
@@ -78,13 +79,14 @@ namespace ConsoleApp1
         }
 
 
-        public Texture getColorRampTexture() {
+        public Texture getColorRampTexture()
+        {
             return colorRampTexture;
         }
 
         byte[] createColorRamp(List<Tuple<double, uint>> colors)
         {
-            int width = 256; 
+            int width = 256;
             int height = 1;
 
             byte[] res = new byte[width * height * 4];
@@ -135,12 +137,12 @@ namespace ConsoleApp1
             byte[] particleState = new byte[numParticles * 4];//rgba
             for (int i = 0; i < particleState.Length; i++)
             {
-                particleState[i] = (byte)Math.Floor(rand.NextDouble() * 255); 
+                particleState[i] = (byte)Math.Floor(rand.NextDouble() * 255);
             }
 
             // textures to hold the particle state for the current and the next frame
             particleStateTexture0 = Util.createTexture(_Device, particleState, particleRes, particleRes);
-            particleStateTexture1 = Util.createTexture(_Device, particleState, particleRes, particleRes);        
+            particleStateTexture1 = Util.createTexture(_Device, particleState, particleRes, particleRes);
 
             this.numParticles = numParticles;
         }
@@ -156,8 +158,8 @@ namespace ConsoleApp1
         }
 
         public Texture getParticleStateTexture()
-        { 
-             return particleStateTexture0;           
+        {
+            return particleStateTexture0;
         }
 
         public Texture getParticleStateTexture1()
@@ -171,10 +173,10 @@ namespace ConsoleApp1
             set { _Fade = value; }
         }
 
-        public float Opacity
+        public float Contraste
         {
-            get { return _Opacity; }
-            set { _Opacity = value; }
+            get { return _Contraste; }
+            set { _Contraste = value; }
         }
 
         public float SpeedFactor
@@ -189,7 +191,8 @@ namespace ConsoleApp1
             set { _IsWave = value; }
         }
 
-        public void updateNumParticles(int numParticles) {
+        public void updateNumParticles(int numParticles)
+        {
             setnumParticles(numParticles);
         }
 
